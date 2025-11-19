@@ -1,0 +1,18 @@
+pull_request_rules:
+  - name: "Auto merge version PR"
+    conditions:
+      - label = "version"
+      - check-success = "Build & Test"
+      - check-success = "Create version PR / Publish"
+    actions:
+      merge:
+        method: merge
+        commit_message: title
+
+  - name: "Auto merge dependabot PRs"
+    conditions:
+      - author = "dependabot[bot]"
+      - check-success = "Build & Test"
+    actions:
+      merge:
+        method: squash

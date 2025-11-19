@@ -1,0 +1,50 @@
+image: node:20
+
+stages:
+  - build
+  - release
+
+variables:
+  PNPM_HOME: "$CI_PROJECT_DIR/.pnpm-home"
+  PATH: "$PNPM_HOME:$PATH"
+
+cache:
+  key: "$CI_COMMIT_REF_SLUG-turbo"
+  paths:
+    - .turbo/
+    - node_modules/
+    - .pnpm-store/
+
+before_script:
+  - corepack enable
+  - pnpm config set store-dir .pnpm-store
+
+build:
+  stage: build
+  script:
+    - pnpm install --frozen-lockfile
+    - pnpm lint
+    - pnpm build
+    - pnpm test
+  artifacts:
+    paths:
+      - dist/
+      - build/
+    expire_in: 1 week
+  only:
+    - merge_requests
+    - main
+
+release:
+  stage: release
+  script:
+    - pnpm install --frozen-lockfile
+    - pnpm exec changeset version
+    - pnpm exec changeset publish
+  artifacts:
+    paths:
+      - packages/*/package.json
+      - CHANGELOG.md
+  only:
+    - main
+  when: manual
