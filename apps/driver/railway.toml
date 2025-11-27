@@ -1,9 +1,6 @@
 [build]
-builder = "NIXPACKS"
-buildCommand = "npm -w install --frozen-lockfile && npm -C . build"
+builder = "nixpacks"
+buildCommand = "npm install && npm run build"
 
-[deploy]
-startCommand = "npm start"
-healthcheckPath = "/"
-healthcheckTimeout = 100
-restartPolicyType = "ON_FAILURE"
+[start]
+command = "npm run start"
