@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosError } from 'axios';
 import { ApiResponse, ApiError } from '@/types/api';
+import { STORAGE_KEYS } from '@/lib/constants';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
 const API_TIMEOUT = parseInt(process.env.NEXT_PUBLIC_API_TIMEOUT || '10000');
@@ -17,7 +18,7 @@ const axiosInstance: AxiosInstance = axios.create({
 // Interceptor para requisição
 axiosInstance.interceptors.request.use(
     (config) => {
-        const token = typeof window !== 'undefined' ? localStorage.getItem('taxigest_token') : null;
+        const token = typeof window !== 'undefined' ? localStorage.getItem(STORAGE_KEYS.TOKEN) : null;
 
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
@@ -36,8 +37,8 @@ axiosInstance.interceptors.response.use(
     (error: AxiosError) => {
         if (error.response?.status === 401) {
             if (typeof window !== 'undefined') {
-                localStorage.removeItem('taxigest_token');
-                localStorage.removeItem('taxigest_usuario');
+                localStorage.removeItem(STORAGE_KEYS.TOKEN);
+                localStorage.removeItem(STORAGE_KEYS.USUARIO);
                 window.location.href = '/login';
             }
         }

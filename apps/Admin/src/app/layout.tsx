@@ -5,20 +5,19 @@ import "./globals.css";
 //import ToasterProvider from "@/components/providers/ToasterProvider";
 
 export const metadata: Metadata = {
-  title: "TaxiGest Angola - Sistema de Gestão de Transporte",
-  description: "Sistema completo de gestão de transporte e táxis em Angola",
+  title: "witransfer - Sistema de Gestão de Transporte",
+  description: "witransfer: Sistema completo de gestão de transporte e táxis",
   keywords: [
     "taxi",
     "transporte",
     "gestão",
-    "angola",
     "sistema",
     "motoristas",
     "clientes",
   ],
-  authors: [{ name: "TaxiGest" }],
-  creator: "TaxiGest Angola",
-  publisher: "TaxiGest",
+  authors: [{ name: "witransfer" }],
+  creator: "witransfer",
+  publisher: "witransfer",
 };
 export const viewport = {
   width: "device-width",
@@ -40,7 +39,6 @@ export default function RootLayout({
       </head>
       <body className="bg-gray-50 text-gray-900">
         <div id="root">{children}</div>
-    
       </body>
     </html>
   );

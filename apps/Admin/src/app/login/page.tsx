@@ -49,7 +49,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
       <div className="w-full max-w-md bg-white rounded-lg shadow p-6">
         <h1 className="text-2xl font-semibold text-gray-900 mb-1">
-          TaxiGest Angola
+          witransfer
         </h1>
         <p className="text-sm text-gray-500 mb-6">
           Entrar na área administrativa

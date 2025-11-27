@@ -50,7 +50,7 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false, onClose }) => {
       {/* Header */}
       <div className="p-4 border-b border-teal-600">
         <div className="flex items-center justify-between">
-          <h1 className="text-xl font-bold">TaxiGest</h1>
+          <h1 className="text-xl font-bold">witransfer</h1>
           {mobile && (
             <button onClick={onClose} className="p-1">
               <X size={20} />
@@ -91,7 +91,7 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false, onClose }) => {
       <div className="p-4 border-t border-teal-600">
         <div className="text-xs text-teal-200">
           <p>v1.0.0</p>
-          <p>© 2024 TaxiGest Angola</p>
+          <p>© 2024 witransfer</p>
         </div>
       </div>
     </aside>

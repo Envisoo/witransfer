@@ -1,7 +1,7 @@
 {
-    "name": "taxigest-angola",
+    "name": "witransfer",
     "version": "1.0.0",
-    "description": "Sistema de Gestão de Transporte - TaxiGest Angola",
+    "description": "witransfer - Sistema de Gestão de Transporte",
     "private": true,
     "scripts": {
         "dev": "next dev",

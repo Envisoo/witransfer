@@ -152,8 +152,8 @@ export const DELAY_THROTTLE = 1000; // ms
 
 // Local Storage Keys
 export const STORAGE_KEYS = {
-    TOKEN: 'taxigest_token',
-    USUARIO: 'taxigest_usuario',
-    PREFERENCIAS: 'taxigest_preferencias',
-    TEMAS: 'taxigest_tema',
+    TOKEN: 'witransfer_token',
+    USUARIO: 'witransfer_usuario',
+    PREFERENCIAS: 'witransfer_preferencias',
+    TEMAS: 'witransfer_tema',
 } as const;

@@ -19,7 +19,7 @@ interface SendEmailProps {
 export const sendEmail = async ({ to, subject, html }: SendEmailProps) => {
     try {
         const info = await transporter.sendMail({
-            from: process.env.SMTP_FROM || '"TaxiGest" <noreply@taxigest.com>',
+            from: process.env.SMTP_FROM || '"witransfer" <noreply@witransfer.com>',
             to,
             subject,
             html,

@@ -1,29 +1,31 @@
-'use client';
+/** @format */
 
-import React, { useState } from 'react';
-import { ArrowLeft } from 'lucide-react';
-import Link from 'next/link';
-import MainLayout from '@/components/layout/MainLayout';
-import Button from '@/components/common/Button';
-import Input from '@/components/common/Input';
-import { useNotification } from '@/hooks/useNotification';
+"use client";
+
+import React, { useState } from "react";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
+import MainLayout from "@/components/layout/MainLayout";
+import Button from "@/components/common/Button";
+import Input from "@/components/common/Input";
+import { useNotification } from "@/hooks/useNotification";
 
 const DadosEmpresa = () => {
   const { sucesso, erro: notificarErro } = useNotification();
   const [salvando, setSalvando] = useState(false);
 
   const [dados, setDados] = useState({
-    nomeEmpresa: 'TaxiGest Angola',
-    cnpj: '12.345.678/0001-90',
-    email: 'contato@taxigest.ao',
-    telefone: '923456789',
-    website: 'www.taxigest.ao',
-    endereco: 'Luanda, Angola',
-    cidade: 'Luanda',
-    pais: 'Angola',
-    descricao: 'Sistema de gestão de táxis e transportes em Angola',
+    nomeEmpresa: "witransfer",
+    cnpj: "12.345.678/0001-90",
+    email: "contato@witransfer.com",
+    telefone: "923456789",
+    website: "www.witransfer.com",
+    endereco: "Luanda, Angola",
+    cidade: "Luanda",
+    pais: "Angola",
+    descricao: "Sistema de gestão de táxis e transportes em Angola",
     logo: null as File | null,
-    nif: '123456789',
+    nif: "123456789",
   });
 
   const handleMudar = (campo: string, valor: any) => {
@@ -38,9 +40,9 @@ const DadosEmpresa = () => {
       setSalvando(true);
       // TODO: Salvar dados no servidor
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      sucesso('Dados da empresa atualizados com sucesso');
+      sucesso("Dados da empresa atualizados com sucesso");
     } catch (erro: any) {
-      notificarErro(erro.message || 'Erro ao salvar dados');
+      notificarErro(erro.message || "Erro ao salvar dados");
     } finally {
       setSalvando(false);
     }
@@ -49,7 +51,9 @@ const DadosEmpresa = () => {
   return (
     <MainLayout titulo="Dados da Empresa">
       <div className="mb-6">
-        <Link href="/configuracoes" className="flex items-center gap-2 text-teal-600 hover:text-teal-700">
+        <Link
+          href="/configuracoes"
+          className="flex items-center gap-2 text-teal-600 hover:text-teal-700">
           <ArrowLeft size={20} />
           Voltar para Configurações
         </Link>
@@ -57,12 +61,17 @@ const DadosEmpresa = () => {
 
       <div className="max-w-2xl mx-auto">
         <div className="card p-6">
-          <form onSubmit={(e) => { e.preventDefault(); handleSalvar(); }} className="space-y-6">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSalvar();
+            }}
+            className="space-y-6">
             {/* Nome da Empresa */}
             <Input
               label="Nome da Empresa"
               value={dados.nomeEmpresa}
-              onChange={(e) => handleMudar('nomeEmpresa', e.target.value)}
+              onChange={(e) => handleMudar("nomeEmpresa", e.target.value)}
               required
             />
 
@@ -70,7 +79,7 @@ const DadosEmpresa = () => {
             <Input
               label="CNPJ"
               value={dados.cnpj}
-              onChange={(e) => handleMudar('cnpj', e.target.value)}
+              onChange={(e) => handleMudar("cnpj", e.target.value)}
               placeholder="12.345.678/0001-90"
             />
 
@@ -78,7 +87,7 @@ const DadosEmpresa = () => {
             <Input
               label="NIF"
               value={dados.nif}
-              onChange={(e) => handleMudar('nif', e.target.value)}
+              onChange={(e) => handleMudar("nif", e.target.value)}
             />
 
             {/* Email */}
@@ -86,7 +95,7 @@ const DadosEmpresa = () => {
               label="E-mail"
               type="email"
               value={dados.email}
-              onChange={(e) => handleMudar('email', e.target.value)}
+              onChange={(e) => handleMudar("email", e.target.value)}
               required
             />
 
@@ -94,7 +103,7 @@ const DadosEmpresa = () => {
             <Input
               label="Telefone"
               value={dados.telefone}
-              onChange={(e) => handleMudar('telefone', e.target.value)}
+              onChange={(e) => handleMudar("telefone", e.target.value)}
               required
             />
 
@@ -102,7 +111,7 @@ const DadosEmpresa = () => {
             <Input
               label="Website"
               value={dados.website}
-              onChange={(e) => handleMudar('website', e.target.value)}
+              onChange={(e) => handleMudar("website", e.target.value)}
               placeholder="www.taxigest.ao"
             />
 
@@ -110,7 +119,7 @@ const DadosEmpresa = () => {
             <Input
               label="Endereço"
               value={dados.endereco}
-              onChange={(e) => handleMudar('endereco', e.target.value)}
+              onChange={(e) => handleMudar("endereco", e.target.value)}
               required
             />
 
@@ -118,7 +127,7 @@ const DadosEmpresa = () => {
             <Input
               label="Cidade"
               value={dados.cidade}
-              onChange={(e) => handleMudar('cidade', e.target.value)}
+              onChange={(e) => handleMudar("cidade", e.target.value)}
               required
             />
 
@@ -126,7 +135,7 @@ const DadosEmpresa = () => {
             <Input
               label="País"
               value={dados.pais}
-              onChange={(e) => handleMudar('pais', e.target.value)}
+              onChange={(e) => handleMudar("pais", e.target.value)}
               required
             />
 
@@ -135,7 +144,7 @@ const DadosEmpresa = () => {
               <label className="form-label">Descrição</label>
               <textarea
                 value={dados.descricao}
-                onChange={(e) => handleMudar('descricao', e.target.value)}
+                onChange={(e) => handleMudar("descricao", e.target.value)}
                 className="form-input"
                 rows={4}
                 placeholder="Descrição da sua empresa..."
@@ -148,23 +157,17 @@ const DadosEmpresa = () => {
               <input
                 type="file"
                 accept="image/*"
-                onChange={(e) => handleMudar('logo', e.target.files?.[0])}
+                onChange={(e) => handleMudar("logo", e.target.files?.[0])}
                 className="form-input"
               />
             </div>
 
             {/* Botões */}
             <div className="flex gap-4 pt-6">
-              <Button
-                type="submit"
-                variant="primary"
-                isLoading={salvando}
-              >
+              <Button type="submit" variant="primary" isLoading={salvando}>
                 Salvar Dados
               </Button>
-              <Button variant="outline">
-                Cancelar
-              </Button>
+              <Button variant="outline">Cancelar</Button>
             </div>
           </form>
         </div>
