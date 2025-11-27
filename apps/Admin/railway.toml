@@ -1,9 +1,9 @@
 [build]
 builder = "NIXPACKS"
-buildCommand = "pnpm -w install --frozen-lockfile && pnpm -C . build"
+buildCommand = "npm -w install --frozen-lockfile && npm -C . build"
 
 [deploy]
-startCommand = "pnpm start"
+startCommand = "npm start"
 healthcheckPath = "/"
 healthcheckTimeout = 100
 restartPolicyType = "ON_FAILURE"
