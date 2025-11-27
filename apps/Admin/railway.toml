@@ -1,0 +1,9 @@
+[build]
+builder = "NIXPACKS"
+buildCommand = "pnpm -w install --frozen-lockfile && pnpm -C . build"
+
+[deploy]
+startCommand = "pnpm start"
+healthcheckPath = "/"
+healthcheckTimeout = 100
+restartPolicyType = "ON_FAILURE"
