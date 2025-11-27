@@ -39,7 +39,7 @@ axiosInstance.interceptors.response.use(
             if (typeof window !== 'undefined') {
                 localStorage.removeItem(STORAGE_KEYS.TOKEN);
                 localStorage.removeItem(STORAGE_KEYS.USUARIO);
-                window.location.href = '/login';
+                // Não redirecionar para /login
             }
         }
 

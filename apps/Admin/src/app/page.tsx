@@ -12,11 +12,7 @@ export default function Home() {
 
   useEffect(() => {
     if (!carregando) {
-      if (autenticado) {
-        router.push("/dashboard");
-      } else {
-        router.push("/login");
-      }
+      router.push("/dashboard");
     }
   }, [autenticado, carregando, router]);
 

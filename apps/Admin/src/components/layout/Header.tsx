@@ -5,7 +5,6 @@
 import React from "react";
 import { Bell, LogOut } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { useRouter } from "next/navigation";
 
 interface HeaderProps {
   titulo?: string;
@@ -13,11 +12,10 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ titulo = "Dashboard" }) => {
   const { usuario, logout } = useAuth();
-  const router = useRouter();
 
   const handleLogout = () => {
     logout();
-    router.push("/login");
+    // Permanecer na página atual após logout
   };
 
   return (
