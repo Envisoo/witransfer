@@ -286,8 +286,6 @@ const Dashboard = () => {
         </div>
 
         <div className="space-y-6">
-          {/* Alerts & Notifications */}
-
           {/* Revenue Chart (Mini) */}
           <div className="bg-white p-5 rounded-0 shadow-sm border border-gray-100">
             <h3 className="text-lg font-bold text-gray-800 mb-4">Receita</h3>
@@ -328,6 +326,7 @@ const Dashboard = () => {
             </div>
           </div>
 
+          {/* Alerts & Notifications */}
           <AlertsNotifications />
         </div>
       </div>
@@ -340,7 +339,7 @@ const Dashboard = () => {
               Viagens Recentes
             </h3>
             <button className="text-sm text-teal-600 hover:text-teal-700 font-medium">
-              Ver Todas
+              Ver as Todas
             </button>
           </div>
           <div className="overflow-x-auto">
