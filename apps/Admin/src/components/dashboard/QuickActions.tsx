@@ -1,5 +1,5 @@
 import React from 'react';
-import { UserPlus, Map, FileText, Settings } from 'lucide-react';
+import { UserPlus, Map, FileText } from 'lucide-react';
 import Link from 'next/link';
 
 const actions = [
@@ -22,10 +22,10 @@ const actions = [
     color: 'bg-purple-50 text-purple-600',
   },
   {
-    title: 'Configurações',
-    icon: Settings,
-    href: '/configuracoes',
-    color: 'bg-gray-50 text-gray-600',
+    title: 'Novo Cliente',
+    icon: UserPlus,
+    href: '/clientes/novo',
+    color: 'bg-orange-50 text-orange-600',
   },
 ];
 

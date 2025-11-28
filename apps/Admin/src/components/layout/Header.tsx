@@ -3,7 +3,7 @@
 "use client";
 
 import React from "react";
-import { Bell, LogOut } from "lucide-react";
+import { Bell, LogOut, Settings } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
 interface HeaderProps {
@@ -32,6 +32,10 @@ const Header: React.FC<HeaderProps> = ({ titulo = "Dashboard" }) => {
           <button className="relative p-2 hover:bg-gray-100 rounded-lg transition-colors">
             <Bell size={20} className="text-gray-600" />
             <span className="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full"></span>
+          </button>
+
+          <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+            <Settings size={20} className="text-gray-600" />
           </button>
 
           {/* User Menu */}
