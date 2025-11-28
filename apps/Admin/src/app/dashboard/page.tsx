@@ -11,8 +11,6 @@ import AlertsNotifications from "@/components/dashboard/AlertsNotifications";
 import {
   BarChart,
   Bar,
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -22,6 +20,8 @@ import {
   Pie,
   Cell,
   Legend,
+  AreaChart,
+  Area,
 } from "recharts";
 import dynamic from "next/dynamic";
 
@@ -291,23 +291,44 @@ const Dashboard = () => {
             <h3 className="text-lg font-bold text-gray-800 mb-4">Receita</h3>
             <div className="h-48">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={receitaData}>
+                <AreaChart data={receitaData}>
+                  <defs>
+                    <linearGradient
+                      id="gradReceita"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1">
+                      <stop
+                        offset="5%"
+                        stopColor="#f97316"
+                        stopOpacity={0.35}
+                      />
+                      <stop
+                        offset="95%"
+                        stopColor="#f97316"
+                        stopOpacity={0.05}
+                      />
+                    </linearGradient>
+                  </defs>
                   <XAxis dataKey="hora" hide />
+                  <YAxis hide />
                   <Tooltip
+                    formatter={(v: number) => `${v.toLocaleString()} Kz`}
                     contentStyle={{
                       borderRadius: "8px",
                       border: "none",
                       boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
                     }}
                   />
-                  <Line
+                  <Area
                     type="monotone"
                     dataKey="receita"
                     stroke="#f97316"
-                    strokeWidth={3}
-                    dot={false}
+                    strokeWidth={2}
+                    fill="url(#gradReceita)"
                   />
-                </LineChart>
+                </AreaChart>
               </ResponsiveContainer>
             </div>
             <div className="mt-4 flex items-center justify-between text-sm">
@@ -342,9 +363,9 @@ const Dashboard = () => {
               Ver as Todas
             </button>
           </div>
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto max-h-96">
             <table className="w-full text-sm text-left">
-              <thead className="bg-gray-50 text-gray-500 font-medium">
+              <thead className="bg-gray-50 text-gray-500 font-medium sticky top-0 z-10">
                 <tr>
                   <th className="px-5 py-3">ID</th>
                   <th className="px-5 py-3">Cliente</th>
@@ -354,10 +375,10 @@ const Dashboard = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {recentTrips.map((trip) => (
+                {recentTrips.map((trip, idx) => (
                   <tr
                     key={trip.id}
-                    className="hover:bg-gray-50 transition-colors">
+                    className={`transition-colors hover:bg-gray-50 ${idx % 2 === 0 ? "bg-white" : "bg-gray-50"}`}>
                     <td className="px-5 py-3 font-medium text-gray-900">
                       {trip.id}
                     </td>
