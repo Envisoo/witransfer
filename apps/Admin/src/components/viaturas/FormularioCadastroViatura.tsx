@@ -1,38 +1,42 @@
-'use client';
+/** @format */
 
-import React from 'react';
-import { useForm } from '@/hooks/useForm';
-import { useNotification } from '@/hooks/useNotification';
-import Button from '@/components/common/Button';
-import Input from '@/components/common/Input';
-import Select from '@/components/common/Select';
-import viaturasService from '@/services/viaturasService';
-import { ViaturaFormData } from '@/types/viatura';
+"use client";
+
+import React from "react";
+import { useForm } from "@/hooks/useForm";
+import { useNotification } from "@/hooks/useNotification";
+import Button from "@/components/common/Button";
+import Input from "@/components/common/Input";
+import Select from "@/components/common/Select";
+import viaturasService from "@/services/viaturasService";
+import { ViaturaFormData } from "@/types/viatura";
 
 interface FormularioCadastroViaturaProps {
   viaturaId?: string;
   onSucesso?: () => void;
+  onCancel?: () => void;
   editar?: boolean;
 }
 
 const FormularioCadastroViatura: React.FC<FormularioCadastroViaturaProps> = ({
   viaturaId,
   onSucesso,
+  onCancel,
   editar = false,
 }) => {
   const { sucesso, erro } = useNotification();
 
   const dadosIniciais: ViaturaFormData = {
-    matricula: '',
-    modelo: '',
-    marca: '',
-    cor: '#000000',
+    matricula: "",
+    modelo: "",
+    marca: "",
+    cor: "#000000",
     ano: new Date().getFullYear(),
     lugares: 4,
     arCondicionado: false,
-    status: 'ativa',
-    dataUltimaInspecao: '',
-    categoria: 'economica',
+    status: "ativa",
+    dataUltimaInspecao: "",
+    categoria: "economica",
     kilometragem: 0,
   };
 
@@ -41,31 +45,31 @@ const FormularioCadastroViatura: React.FC<FormularioCadastroViaturaProps> = ({
     onSubmit: async (dados) => {
       // Validações
       if (!dados.matricula) {
-        definirErro('matricula', 'Matrícula é obrigatória');
+        definirErro("matricula", "Matrícula é obrigatória");
         return;
       }
 
       if (!dados.modelo) {
-        definirErro('modelo', 'Modelo é obrigatório');
+        definirErro("modelo", "Modelo é obrigatório");
         return;
       }
 
       if (!dados.marca) {
-        definirErro('marca', 'Marca é obrigatória');
+        definirErro("marca", "Marca é obrigatória");
         return;
       }
 
       try {
         if (editar && viaturaId) {
           await viaturasService.atualizar(viaturaId, dados);
-          sucesso('Viatura atualizada com sucesso');
+          sucesso("Viatura atualizada com sucesso");
         } else {
           await viaturasService.criar(dados);
-          sucesso('Viatura criada com sucesso');
+          sucesso("Viatura criada com sucesso");
         }
         onSucesso?.();
       } catch (error: any) {
-        erro(error.message || 'Erro ao salvar viatura');
+        erro(error.message || "Erro ao salvar viatura");
       }
     },
   });
@@ -76,7 +80,7 @@ const FormularioCadastroViatura: React.FC<FormularioCadastroViaturaProps> = ({
       <Input
         label="Matrícula"
         value={valores.matricula}
-        onChange={(e) => mudar('matricula', e.target.value)}
+        onChange={(e) => mudar("matricula", e.target.value)}
         erro={erros.matricula}
         required
         placeholder="ABC-12-CD-123"
@@ -87,7 +91,7 @@ const FormularioCadastroViatura: React.FC<FormularioCadastroViaturaProps> = ({
       <Input
         label="Marca"
         value={valores.marca}
-        onChange={(e) => mudar('marca', e.target.value)}
+        onChange={(e) => mudar("marca", e.target.value)}
         erro={erros.marca}
         required
         placeholder="Toyota"
@@ -97,7 +101,7 @@ const FormularioCadastroViatura: React.FC<FormularioCadastroViaturaProps> = ({
       <Input
         label="Modelo"
         value={valores.modelo}
-        onChange={(e) => mudar('modelo', e.target.value)}
+        onChange={(e) => mudar("modelo", e.target.value)}
         erro={erros.modelo}
         required
         placeholder="Corolla"
@@ -110,13 +114,13 @@ const FormularioCadastroViatura: React.FC<FormularioCadastroViaturaProps> = ({
           <input
             type="color"
             value={valores.cor}
-            onChange={(e) => mudar('cor', e.target.value)}
+            onChange={(e) => mudar("cor", e.target.value)}
             className="w-16 h-10 rounded border border-gray-300 cursor-pointer"
           />
           <input
             type="text"
             value={valores.cor}
-            onChange={(e) => mudar('cor', e.target.value)}
+            onChange={(e) => mudar("cor", e.target.value)}
             className="form-input flex-1"
           />
         </div>
@@ -129,7 +133,7 @@ const FormularioCadastroViatura: React.FC<FormularioCadastroViaturaProps> = ({
         min="2000"
         max={new Date().getFullYear() + 1}
         value={valores.ano}
-        onChange={(e) => mudar('ano', parseInt(e.target.value))}
+        onChange={(e) => mudar("ano", parseInt(e.target.value))}
         required
       />
 
@@ -140,7 +144,7 @@ const FormularioCadastroViatura: React.FC<FormularioCadastroViaturaProps> = ({
         min="1"
         max="9"
         value={valores.lugares}
-        onChange={(e) => mudar('lugares', parseInt(e.target.value))}
+        onChange={(e) => mudar("lugares", parseInt(e.target.value))}
         required
       />
 
@@ -150,10 +154,12 @@ const FormularioCadastroViatura: React.FC<FormularioCadastroViaturaProps> = ({
           type="checkbox"
           id="arCondicionado"
           checked={valores.arCondicionado}
-          onChange={(e) => mudar('arCondicionado', e.target.checked)}
+          onChange={(e) => mudar("arCondicionado", e.target.checked)}
           className="w-4 h-4"
         />
-        <label htmlFor="arCondicionado" className="text-sm font-medium text-gray-700">
+        <label
+          htmlFor="arCondicionado"
+          className="text-sm font-medium text-gray-700">
           Possui Ar Condicionado
         </label>
       </div>
@@ -162,12 +168,12 @@ const FormularioCadastroViatura: React.FC<FormularioCadastroViaturaProps> = ({
       <Select
         label="Categoria"
         value={valores.categoria}
-        onChange={(e) => mudar('categoria', e.target.value)}
+        onChange={(e) => mudar("categoria", e.target.value)}
         opcoes={[
-          { value: 'economica', label: 'Econômica' },
-          { value: 'conforto', label: 'Conforto' },
-          { value: 'premium', label: 'Premium' },
-          { value: 'van', label: 'Van' },
+          { value: "economica", label: "Econômica" },
+          { value: "conforto", label: "Conforto" },
+          { value: "premium", label: "Premium" },
+          { value: "van", label: "Van" },
         ]}
       />
 
@@ -176,7 +182,7 @@ const FormularioCadastroViatura: React.FC<FormularioCadastroViaturaProps> = ({
         label="Data Última Inspeção"
         type="date"
         value={valores.dataUltimaInspecao}
-        onChange={(e) => mudar('dataUltimaInspecao', e.target.value)}
+        onChange={(e) => mudar("dataUltimaInspecao", e.target.value)}
         required
       />
 
@@ -186,31 +192,36 @@ const FormularioCadastroViatura: React.FC<FormularioCadastroViaturaProps> = ({
         type="number"
         min="0"
         value={valores.kilometragem}
-        onChange={(e) => mudar('kilometragem', parseInt(e.target.value))}
+        onChange={(e) => mudar("kilometragem", parseInt(e.target.value))}
       />
 
       {/* Status */}
       <Select
         label="Status"
         value={valores.status}
-        onChange={(e) => mudar('status', e.target.value)}
+        onChange={(e) => mudar("status", e.target.value)}
         opcoes={[
-          { value: 'ativa', label: 'Ativa' },
-          { value: 'inativa', label: 'Inativa' },
-          { value: 'manutencao', label: 'Manutenção' },
-          { value: 'inspecao', label: 'Inspeção' },
+          { value: "ativa", label: "Ativa" },
+          { value: "inativa", label: "Inativa" },
+          { value: "manutencao", label: "Manutenção" },
+          { value: "inspecao", label: "Inspeção" },
         ]}
       />
 
       {/* Botões */}
       <div className="flex gap-4 pt-6">
-        <Button
-          type="submit"
-          variant="primary"
-          isLoading={enviando}
-        >
-          {editar ? 'Atualizar' : 'Criar'} Viatura
+        <Button type="submit" variant="primary" isLoading={enviando}>
+          {editar ? "Atualizar" : "Criar"} Viatura
         </Button>
+        {onCancel && (
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={onCancel}
+            disabled={enviando}>
+            Cancelar
+          </Button>
+        )}
       </div>
     </form>
   );

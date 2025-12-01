@@ -8,6 +8,8 @@ import MainLayout from "@/components/layout/MainLayout";
 import MetricCards from "@/components/dashboard/MetricCards";
 import QuickActions from "@/components/dashboard/QuickActions";
 import AlertsNotifications from "@/components/dashboard/AlertsNotifications";
+import InsightsWidget from "@/components/dashboard/InsightsWidget";
+import RecomendacoesWidget from "@/components/dashboard/RecomendacoesWidget";
 import {
   BarChart,
   Bar,
@@ -162,6 +164,12 @@ const Dashboard = () => {
       </div>
 
       <MetricCards data={dados} />
+
+      {/* Insights and Recommendations */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <InsightsWidget />
+        <RecomendacoesWidget />
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
         <div className="lg:col-span-2 space-y-6">

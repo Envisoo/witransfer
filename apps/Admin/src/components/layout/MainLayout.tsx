@@ -14,7 +14,7 @@ interface MainLayoutProps {
   titulo?: string;
 }
 
-const MainLayout: React.FC<MainLayoutProps> = ({ children, titulo }) => {
+const MainLayout = ({ children, titulo }: MainLayoutProps) => {
   const { carregando } = useAuth();
   const [sidebarAberta, setSidebarAberta] = useState(false);
 

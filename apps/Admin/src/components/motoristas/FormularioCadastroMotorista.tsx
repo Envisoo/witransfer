@@ -6,7 +6,6 @@ import { useNotification } from '@/hooks/useNotification';
 import Button from '@/components/common/Button';
 import Input from '@/components/common/Input';
 import Select from '@/components/common/Select';
-import motoristasService from '@/services/motoristasService';
 import { MotoristaFormData } from '@/types/motorista';
 import {
   validarEmail,
@@ -20,16 +19,18 @@ interface FormularioCadastroMotoristaProps {
   motoristaId?: string;
   onSucesso?: () => void;
   editar?: boolean;
+  dadosIniciais?: MotoristaFormData;
 }
 
 const FormularioCadastroMotorista: React.FC<FormularioCadastroMotoristaProps> = ({
   motoristaId,
   onSucesso,
   editar = false,
+  dadosIniciais: dadosRecebidos,
 }) => {
   const { sucesso, erro } = useNotification();
 
-  const dadosIniciais: MotoristaFormData = {
+  const dadosPadrao: MotoristaFormData = {
     nome: '',
     email: '',
     telefone: '',
@@ -41,7 +42,7 @@ const FormularioCadastroMotorista: React.FC<FormularioCadastroMotoristaProps> = 
   };
 
   const { valores, erros, enviando, mudar, definirErro, enviar } = useForm({
-    valorInicial: dadosIniciais,
+    valorInicial: dadosRecebidos || dadosPadrao,
     onSubmit: async (dados) => {
       // Validações
       if (!dados.nome || dados.nome.length < 3) {
@@ -80,12 +81,15 @@ const FormularioCadastroMotorista: React.FC<FormularioCadastroMotoristaProps> = 
       }
 
       try {
+        // Simulação de chamada API
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
         if (editar && motoristaId) {
-          await motoristasService.atualizar(motoristaId, dados);
-          sucesso('Motorista atualizado com sucesso');
+          console.log('Atualizando motorista:', { id: motoristaId, ...dados });
+          sucesso('Motorista atualizado com sucesso (Simulação)');
         } else {
-          await motoristasService.criar(dados);
-          sucesso('Motorista criado com sucesso');
+          console.log('Criando motorista:', dados);
+          sucesso('Motorista criado com sucesso (Simulação)');
         }
         onSucesso?.();
       } catch (erroCapturado: any) {

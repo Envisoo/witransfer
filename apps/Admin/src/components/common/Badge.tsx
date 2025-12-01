@@ -1,16 +1,21 @@
-import React from 'react';
+/** @format */
+
+import React from "react";
 
 type BadgeVariant =
-  | 'ativo'
-  | 'inativo'
-  | 'suspenso'
-  | 'online'
-  | 'offline'
-  | 'concluida'
-  | 'cancelada'
-  | 'pago'
-  | 'pendente'
-  | 'default';
+  | "ativo"
+  | "inativo"
+  | "suspenso"
+  | "online"
+  | "offline"
+  | "concluida"
+  | "cancelada"
+  | "pago"
+  | "pendente"
+  | "default"
+  | "secondary"
+  | "outline"
+  | "destructive";
 
 interface BadgeProps {
   variant?: BadgeVariant;
@@ -19,22 +24,25 @@ interface BadgeProps {
 }
 
 const variantClasses: Record<BadgeVariant, string> = {
-  ativo: 'status-ativo',
-  inativo: 'status-inativo',
-  suspenso: 'status-suspenso',
-  online: 'status-online',
-  offline: 'status-offline',
-  concluida: 'status-concluida',
-  cancelada: 'status-cancelada',
-  pago: 'status-pago',
-  pendente: 'status-pendente',
-  default: 'bg-gray-100 text-gray-800',
+  ativo: "status-ativo",
+  inativo: "status-inativo",
+  suspenso: "status-suspenso",
+  online: "status-online",
+  offline: "status-offline",
+  concluida: "status-concluida",
+  cancelada: "status-cancelada",
+  pago: "status-pago",
+  pendente: "status-pendente",
+  secondary: "status-secondary",
+  outline: "status-outline",
+  destructive: "status-destructive",
+  default: "bg-gray-100 text-gray-800",
 };
 
 const Badge: React.FC<BadgeProps> = ({
-  variant = 'default',
+  variant = "default",
   children,
-  className = '',
+  className = "",
 }) => {
   return (
     <span
@@ -42,8 +50,7 @@ const Badge: React.FC<BadgeProps> = ({
         badge px-3 py-1 text-xs font-semibold rounded-full
         ${variantClasses[variant]}
         ${className}
-      `}
-    >
+      `}>
       {children}
     </span>
   );

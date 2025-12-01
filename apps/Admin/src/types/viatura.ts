@@ -2,6 +2,7 @@ export type StatusViatura = 'ativa' | 'inativa' | 'manutencao' | 'inspecao';
 export type CategoriaViatura = 'economica' | 'conforto' | 'premium' | 'van';
 
 export interface Viatura {
+    historico: any;
     id: string;
     matricula: string;
     modelo: string;
