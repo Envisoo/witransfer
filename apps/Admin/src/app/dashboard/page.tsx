@@ -3,454 +3,736 @@
 "use client";
 
 import React, { useState } from "react";
-import { Search, Settings2, Download, MapPin } from "lucide-react";
-import MainLayout from "@/components/layout/MainLayout";
-import MetricCards from "@/components/dashboard/MetricCards";
-import QuickActions from "@/components/dashboard/QuickActions";
-import AlertsNotifications from "@/components/dashboard/AlertsNotifications";
-import InsightsWidget from "@/components/dashboard/InsightsWidget";
-import RecomendacoesWidget from "@/components/dashboard/RecomendacoesWidget";
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  Legend,
-  AreaChart,
-  Area,
-} from "recharts";
+  Search,
+  Download,
+  Users,
+  Car,
+  MapPin,
+  DollarSign,
+  Wallet,
+  Star,
+  Clock,
+  AlertTriangle,
+  CheckCircle,
+  XCircle,
+  AlertCircle,
+  ArrowUpRight,
+} from "lucide-react";
+import MainLayout from "@/components/layout/MainLayout";
 import dynamic from "next/dynamic";
 
-const DriverMap = dynamic(() => import("@/components/dashboard/DriverMap"), {
-  ssr: false,
-  loading: () => (
-    <div className="h-full w-full bg-gray-100 animate-pulse rounded-lg flex items-center justify-center text-gray-400">
-      Carregando mapa...
-    </div>
-  ),
-});
+// Componentes dinâmicos
+const ViagensChart = dynamic(
+  () => import("@/components/dashboard/ViagensChart"),
+  {
+    loading: () => <div className="h-64 bg-gray-50 rounded-lg animate-pulse" />,
+  }
+);
+
+const ReceitaChart = dynamic(
+  () => import("../../components/dashboard/ReceitaChart"),
+  {
+    loading: () => <div className="h-64 bg-gray-50 rounded-lg animate-pulse" />,
+  }
+);
+
+interface Alerta {
+  id: number;
+  tipo: "erro" | "aviso" | "info";
+  titulo: string;
+  descricao: string;
+  data: string;
+  lido: boolean;
+}
 
 const Dashboard = () => {
-  const [dados] = useState({
-    totalClientes: 1240,
-    motoristasOnline: 87,
-    viagensHoje: 243,
-    faturamentoHoje: 7290,
-    lucroHoje: 2187,
-    crescimentoHoje: 4.6,
-    alertasCriticos: 3,
-  });
+  // Estado para busca
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const viagensData = [
-    { hora: "08h", viagens: 5 },
-    { hora: "09h", viagens: 8 },
-    { hora: "10h", viagens: 12 },
-    { hora: "11h", viagens: 15 },
-    { hora: "12h", viagens: 22 },
-    { hora: "13h", viagens: 18 },
-    { hora: "14h", viagens: 25 },
-    { hora: "15h", viagens: 20 },
-    { hora: "16h", viagens: 28 },
-    { hora: "17h", viagens: 32 },
-    { hora: "18h", viagens: 30 },
-    { hora: "19h", viagens: 28 },
-  ];
+  // Dados das métricas
+  const metrics = {
+    totalClientes: {
+      valor: 1240,
+      variacao: 5.2,
+      icon: Users,
+      cor: "bg-blue-100 text-blue-600",
+      textoVariacao: "vs mês passado",
+    },
+    motoristasOnline: {
+      valor: 87,
+      total: 120,
+      variacao: 2.3,
+      icon: Car,
+      cor: "bg-green-100 text-green-600",
+      textoVariacao: "vs ontem",
+    },
+    viagensHoje: {
+      valor: 243,
+      meta: 300,
+      variacao: -1.5,
+      icon: MapPin,
+      cor: "bg-purple-100 text-purple-600",
+      textoVariacao: "vs ontem",
+    },
+    faturamentoDia: {
+      valor: 729000,
+      variacao: 4.6,
+      icon: DollarSign,
+      cor: "bg-yellow-100 text-yellow-600",
+      textoVariacao: "vs ontem",
+    },
+    lucroDia: {
+      valor: 218700,
+      variacao: 8.7,
+      icon: Wallet,
+      cor: "bg-teal-100 text-teal-600",
+      textoVariacao: "vs ontem",
+    },
+    taxaConclusao: {
+      valor: 94,
+      variacao: 2.1,
+      icon: CheckCircle,
+      cor: "bg-indigo-100 text-indigo-600",
+      textoVariacao: "vs semana passada",
+    },
+  };
 
-  const motoristasStatus = [
-    { nome: "Ativos", valor: 87 },
-    { nome: "Inativos", valor: 33 },
-  ];
-
-  const clientesTipo = [
-    { nome: "Novos", valor: 28 },
-    { nome: "Recorrentes", valor: 72 },
-  ];
-
-  const CORES = ["#10b981", "#e5e7eb", "#3b82f6", "#f59e0b"]; // emerald, gray, blue, amber
-
-  const receitaData = [
-    { hora: "08h", receita: 150 },
-    { hora: "09h", receita: 240 },
-    { hora: "10h", receita: 360 },
-    { hora: "11h", receita: 450 },
-    { hora: "12h", receita: 660 },
-    { hora: "13h", receita: 540 },
-    { hora: "14h", receita: 750 },
-    { hora: "15h", receita: 600 },
-    { hora: "16h", receita: 840 },
-    { hora: "17h", receita: 960 },
-    { hora: "18h", receita: 900 },
-    { hora: "19h", receita: 840 },
-  ];
-
-  const topDrivers = [
-    { nome: "Carlos Silva", viagens: 42, ganho: 56000 },
-    { nome: "Ana Pereira", viagens: 38, ganho: 51500 },
-    { nome: "João Neto", viagens: 35, ganho: 49700 },
-    { nome: "Maria Costa", viagens: 32, ganho: 45200 },
-    { nome: "Pedro Santos", viagens: 30, ganho: 42000 },
-  ];
-
-  const recentTrips = [
+  // Dados dos motoristas
+  const topMotoristas = [
     {
-      id: "V-1023",
-      cliente: "M. Santos",
-      origem: "Talatona",
-      destino: "Ingombota",
-      valor: 2500,
-      hora: "10:35",
-      status: "Concluído",
+      id: 1,
+      nome: "Miguel Costa",
+      avaliacao: 4.9,
+      viagens: 142,
+      veiculo: "Toyota Corolla",
+      status: "online",
+      ultimaViagem: "25 min atrás",
     },
     {
-      id: "V-1022",
-      cliente: "A. Lima",
-      origem: "Samba",
-      destino: "Maianga",
-      valor: 1800,
-      hora: "10:20",
-      status: "Em andamento",
+      id: 2,
+      nome: "Ana Pereira",
+      avaliacao: 4.8,
+      viagens: 138,
+      veiculo: "Hyundai Tucson",
+      status: "em_viagem",
+      ultimaViagem: "Em andamento",
     },
     {
-      id: "V-1021",
-      cliente: "J. Lopes",
-      origem: "Zango",
-      destino: "Mutamba",
-      valor: 3200,
-      hora: "10:10",
-      status: "Cancelado",
-    },
-    {
-      id: "V-1020",
-      cliente: "R. Mendes",
-      origem: "Benfica",
-      destino: "Kilamba",
-      valor: 4500,
-      hora: "09:55",
-      status: "Concluído",
+      id: 3,
+      nome: "Pedro Fernandes",
+      avaliacao: 4.7,
+      viagens: 125,
+      veiculo: "Kia Sorento",
+      status: "online",
+      ultimaViagem: "25 min atrás",
     },
   ];
+
+  // Alertas e notificações
+  const alertas: Alerta[] = [
+    {
+      id: 1,
+      tipo: "erro",
+      titulo: "Falha no processamento de pagamento",
+      descricao: "3 transações com falha nas últimas 2 horas",
+      data: "Há 30 minutos",
+      lido: false,
+    },
+    {
+      id: 2,
+      tipo: "aviso",
+      titulo: "Manutenção programada",
+      descricao: "Atualização do sistema programada para hoje às 2h",
+      data: "Hoje",
+      lido: true,
+    },
+    {
+      id: 3,
+      tipo: "info",
+      titulo: "Novo motorista aprovado",
+      descricao: "Carlos Silva foi aprovado e está disponível para viagens",
+      data: "Ontem",
+      lido: true,
+    },
+  ];
+
+  // Função para formatar números
+  const formatarNumero = (num: number) => {
+    return new Intl.NumberFormat("pt-AO").format(num);
+  };
+
+  // Função para formatar valores monetários
+  const formatarMoeda = (valor: number) => {
+    return new Intl.NumberFormat("pt-AO", {
+      style: "currency",
+      currency: "AOA",
+      minimumFractionDigits: 2,
+    }).format(valor);
+  };
+
+  // Função para obter a cor do status
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "online":
+        return "bg-green-500";
+      case "em_viagem":
+        return "bg-yellow-500";
+      default:
+        return "bg-gray-300";
+    }
+  };
+
+  // Função para obter o ícone do tipo de alerta
+  const getAlertaIcon = (tipo: string) => {
+    switch (tipo) {
+      case "erro":
+        return <XCircle className="h-5 w-5 text-red-500" />;
+      case "aviso":
+        return <AlertTriangle className="h-5 w-5 text-yellow-500" />;
+      default:
+        return <AlertCircle className="h-5 w-5 text-blue-500" />;
+    }
+  };
 
   return (
-    <MainLayout titulo="Visão Geral">
-      {/* Header Actions */}
-      <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="relative">
-          <Search
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-            size={18}
-          />
-          <input
-            type="text"
-            placeholder="Buscar..."
-            className="pl-10 pr-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500 w-full sm:w-64 text-sm"
-          />
-        </div>
-        <div className="flex gap-2">
-          <button className="flex items-center gap-2 px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
-            <Settings2 size={16} />
-            <span className="hidden sm:inline">Filtros</span>
-          </button>
-          <button className="flex items-center gap-2 px-3 py-2 bg-teal-600 text-white rounded-lg text-sm font-medium hover:bg-teal-700 transition-colors">
-            <Download size={16} />
-            <span className="hidden sm:inline">Exportar Relatório</span>
-          </button>
-        </div>
-      </div>
-
-      <MetricCards data={dados} />
-
-      {/* Insights and Recommendations */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        <InsightsWidget />
-        <RecomendacoesWidget />
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-        <div className="lg:col-span-2 space-y-6">
-          {/* Quick Actions */}
-          <QuickActions />
-
-          {/* Main Chart */}
-          <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-bold text-gray-800">
-                Fluxo de Viagens
-              </h3>
-              <select className="text-sm border-gray-200 rounded-md text-gray-500 focus:ring-teal-500 focus:border-teal-500">
-                <option>Hoje</option>
-                <option>Esta Semana</option>
-                <option>Este Mês</option>
-              </select>
-            </div>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={viagensData}>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  vertical={false}
-                  stroke="#f0f0f0"
-                />
-                <XAxis
-                  dataKey="hora"
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fill: "#9ca3af", fontSize: 12 }}
-                />
-                <YAxis
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fill: "#9ca3af", fontSize: 12 }}
-                />
-                <Tooltip
-                  contentStyle={{
-                    borderRadius: "8px",
-                    border: "none",
-                    boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
-                  }}
-                  cursor={{ fill: "#f3f4f6" }}
-                />
-                <Bar
-                  dataKey="viagens"
-                  fill="#0d9488"
-                  radius={[4, 4, 0, 0]}
-                  barSize={32}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-
-          {/* Secondary Charts */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
-              <h3 className="text-lg font-bold text-gray-800 mb-4">
-                Motoristas Ativos vs Inativos
-              </h3>
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={motoristasStatus}
-                      dataKey="valor"
-                      nameKey="nome"
-                      innerRadius={50}
-                      outerRadius={80}
-                      paddingAngle={4}>
-                      {motoristasStatus.map((_, idx) => (
-                        <Cell key={idx} fill={CORES[idx % CORES.length]} />
-                      ))}
-                    </Pie>
-                    <Legend verticalAlign="bottom" height={36} />
-                    <Tooltip
-                      contentStyle={{
-                        borderRadius: "8px",
-                        border: "none",
-                        boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
-                      }}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
+    <MainLayout>
+      <div className="p-6 space-y-6">
+        {/* Cabeçalho */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+            <div className="relative flex-1 md:w-64">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Search className="h-4 w-4 text-gray-400" />
               </div>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg bg-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                placeholder="Buscar por motorista, cliente..."
+              />
             </div>
 
-            <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
-              <h3 className="text-lg font-bold text-gray-800 mb-4">
-                Clientes Novos vs Recorrentes
-              </h3>
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={clientesTipo}
-                      dataKey="valor"
-                      nameKey="nome"
-                      innerRadius={50}
-                      outerRadius={80}
-                      paddingAngle={4}>
-                      {clientesTipo.map((_, idx) => (
-                        <Cell
-                          key={idx}
-                          fill={CORES[(idx + 2) % CORES.length]}
-                        />
-                      ))}
-                    </Pie>
-                    <Legend verticalAlign="bottom" height={36} />
-                    <Tooltip
-                      contentStyle={{
-                        borderRadius: "8px",
-                        border: "none",
-                        boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
-                      }}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-6">
-          {/* Revenue Chart (Mini) */}
-          <div className="bg-white p-5 rounded-0 shadow-sm border border-gray-100">
-            <h3 className="text-lg font-bold text-gray-800 mb-4">Receita</h3>
-            <div className="h-48">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={receitaData}>
-                  <defs>
-                    <linearGradient
-                      id="gradReceita"
-                      x1="0"
-                      y1="0"
-                      x2="0"
-                      y2="1">
-                      <stop
-                        offset="5%"
-                        stopColor="#f97316"
-                        stopOpacity={0.35}
-                      />
-                      <stop
-                        offset="95%"
-                        stopColor="#f97316"
-                        stopOpacity={0.05}
-                      />
-                    </linearGradient>
-                  </defs>
-                  <XAxis dataKey="hora" hide />
-                  <YAxis hide />
-                  <Tooltip
-                    formatter={(v: number) => `${v.toLocaleString()} Kz`}
-                    contentStyle={{
-                      borderRadius: "8px",
-                      border: "none",
-                      boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
-                    }}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="receita"
-                    stroke="#f97316"
-                    strokeWidth={2}
-                    fill="url(#gradReceita)"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="mt-4 flex items-center justify-between text-sm">
-              <span className="text-gray-500">Total Hoje</span>
-              <span className="font-bold text-gray-900 text-lg">7.290 Kz</span>
-            </div>
-          </div>
-
-          {/* Mini Map */}
-          <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
-            <h3 className="text-lg font-bold text-gray-800 mb-4">
-              Mapa de Motoristas Ativos
-            </h3>
-            <div className="h-48 relative z-0 rounded-lg overflow-hidden">
-              <DriverMap />
-            </div>
-          </div>
-
-          {/* Alerts & Notifications */}
-          <AlertsNotifications />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-        {/* Recent Trips Table */}
-        <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="p-5 border-b border-gray-100 flex items-center justify-between">
-            <h3 className="text-lg font-bold text-gray-800">
-              Viagens Recentes
-            </h3>
-            <button className="text-sm text-teal-600 hover:text-teal-700 font-medium">
-              Ver as Todas
+            <button className="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg shadow-sm text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 whitespace-nowrap transition-colors">
+              <Download className="mr-2 h-4 w-4" />
+              Exportar
             </button>
           </div>
-          <div className="overflow-x-auto max-h-96">
-            <table className="w-full text-sm text-left">
-              <thead className="bg-gray-50 text-gray-500 font-medium sticky top-0 z-10">
-                <tr>
-                  <th className="px-5 py-3">ID</th>
-                  <th className="px-5 py-3">Cliente</th>
-                  <th className="px-5 py-3">Rota</th>
-                  <th className="px-5 py-3">Status</th>
-                  <th className="px-5 py-3 text-right">Valor</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {recentTrips.map((trip, idx) => (
-                  <tr
-                    key={trip.id}
-                    className={`transition-colors hover:bg-gray-50 ${idx % 2 === 0 ? "bg-white" : "bg-gray-50"}`}>
-                    <td className="px-5 py-3 font-medium text-gray-900">
-                      {trip.id}
-                    </td>
-                    <td className="px-5 py-3 text-gray-700">{trip.cliente}</td>
-                    <td className="px-5 py-3 text-gray-600">
-                      <div className="flex items-center gap-1">
-                        <MapPin size={14} className="text-gray-400" />
-                        {trip.origem}{" "}
-                        <span className="text-gray-400 mx-1">→</span>{" "}
-                        {trip.destino}
-                      </div>
-                    </td>
-                    <td className="px-5 py-3">
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          trip.status === "Concluído"
-                            ? "bg-green-100 text-green-700"
-                            : trip.status === "Em andamento"
-                              ? "bg-blue-100 text-blue-700"
-                              : "bg-red-100 text-red-700"
-                        }`}>
-                        {trip.status}
+        </div>
+
+        {/* Seção de Métricas Principais */}
+        <div className="space-y-2">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Card de Clientes */}
+            <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200">
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="text-sm font-medium text-gray-500 flex items-center">
+                    <Users className="h-4 w-4 mr-2 text-blue-500" />
+                    Total de Clientes
+                  </p>
+                  <p className="text-2xl font-bold text-gray-900 mt-2">
+                    {formatarNumero(metrics.totalClientes.valor)}
+                  </p>
+                  <div className="flex items-center mt-2">
+                    <span
+                      className={`text-xs font-medium ${metrics.totalClientes.variacao >= 0 ? "text-green-600 bg-green-50 px-2 py-0.5 rounded-full" : "text-red-600 bg-red-50 px-2 py-0.5 rounded-full"}`}>
+                      {metrics.totalClientes.variacao >= 0 ? "↑" : "↓"}{" "}
+                      {Math.abs(metrics.totalClientes.variacao)}%
+                    </span>
+                    <span className="text-xs text-gray-500 ml-2">
+                      {metrics.totalClientes.textoVariacao}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Card de Motoristas Online */}
+            <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200">
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="text-sm font-medium text-gray-500 flex items-center">
+                    <Car className="h-4 w-4 mr-2 text-green-500" />
+                    Motoristas Online
+                  </p>
+                  <p className="text-2xl font-bold text-gray-900 mt-2">
+                    {metrics.motoristasOnline.valor}
+                    <span className="text-sm font-normal text-gray-500 ml-1">
+                      / {metrics.motoristasOnline.total}
+                    </span>
+                  </p>
+                  <div className="flex items-center mt-2">
+                    <span
+                      className={`text-xs font-medium ${metrics.motoristasOnline.variacao >= 0 ? "text-green-600 bg-green-50 px-2 py-0.5 rounded-full" : "text-red-600 bg-red-50 px-2 py-0.5 rounded-full"}`}>
+                      {metrics.motoristasOnline.variacao >= 0 ? "↑" : "↓"}{" "}
+                      {Math.abs(metrics.motoristasOnline.variacao)}%
+                    </span>
+                    <span className="text-xs text-gray-500 ml-2">
+                      {metrics.motoristasOnline.textoVariacao}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Card de Viagens Hoje */}
+            <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200">
+              <div className="flex justify-between items-start">
+                <div>
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-medium text-gray-500 flex items-center">
+                      <MapPin className="h-4 w-4 mr-2 text-purple-500" />
+                      Viagens Hoje
+                    </p>
+                    {metrics.viagensHoje.meta && (
+                      <span className="text-xs font-medium bg-purple-50 text-purple-700 px-2 py-0.5 rounded-full">
+                        Meta: {metrics.viagensHoje.meta}
                       </span>
-                    </td>
-                    <td className="px-5 py-3 text-right font-medium text-gray-900">
-                      {trip.valor.toLocaleString()} Kz
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                    )}
+                  </div>
+                  <p className="text-2xl font-bold text-gray-900 mt-2">
+                    {formatarNumero(metrics.viagensHoje.valor)}
+                  </p>
+                  <div className="flex items-center mt-2">
+                    <span
+                      className={`text-xs font-medium ${metrics.viagensHoje.variacao >= 0 ? "text-green-600 bg-green-50 px-2 py-0.5 rounded-full" : "text-red-600 bg-red-50 px-2 py-0.5 rounded-full"}`}>
+                      {metrics.viagensHoje.variacao >= 0 ? "↑" : "↓"}{" "}
+                      {Math.abs(metrics.viagensHoje.variacao)}%
+                    </span>
+                    <span className="text-xs text-gray-500 ml-2">
+                      {metrics.viagensHoje.textoVariacao}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Card de Faturamento do Dia */}
+            <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200">
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="text-sm font-medium text-gray-500 flex items-center">
+                    <DollarSign className="h-4 w-4 mr-2 text-yellow-500" />
+                    Faturamento do Dia
+                  </p>
+                  <p className="text-2xl font-bold text-gray-900 mt-2">
+                    {formatarMoeda(metrics.faturamentoDia.valor)}
+                  </p>
+                  <div className="flex items-center mt-2">
+                    <span
+                      className={`text-xs font-medium ${metrics.faturamentoDia.variacao >= 0 ? "text-green-600 bg-green-50 px-2 py-0.5 rounded-full" : "text-red-600 bg-red-50 px-2 py-0.5 rounded-full"}`}>
+                      {metrics.faturamentoDia.variacao >= 0 ? "↑" : "↓"}{" "}
+                      {Math.abs(metrics.faturamentoDia.variacao)}%
+                    </span>
+                    <span className="text-xs text-gray-500 ml-2">
+                      {metrics.faturamentoDia.textoVariacao}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Card de Lucro do Dia */}
+            <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200">
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="text-sm font-medium text-gray-500 flex items-center">
+                    <Wallet className="h-4 w-4 mr-2 text-teal-500" />
+                    Lucro do Dia
+                  </p>
+                  <p className="text-2xl font-bold text-gray-900 mt-2">
+                    {formatarMoeda(metrics.lucroDia.valor)}
+                  </p>
+                  <div className="flex items-center mt-2">
+                    <span
+                      className={`text-xs font-medium ${metrics.lucroDia.variacao >= 0 ? "text-green-600 bg-green-50 px-2 py-0.5 rounded-full" : "text-red-600 bg-red-50 px-2 py-0.5 rounded-full"}`}>
+                      {metrics.lucroDia.variacao >= 0 ? "↑" : "↓"}{" "}
+                      {Math.abs(metrics.lucroDia.variacao)}%
+                    </span>
+                    <span className="text-xs text-gray-500 ml-2">
+                      {metrics.lucroDia.textoVariacao}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Card de Taxa de Conclusão */}
+            <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200">
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="text-sm font-medium text-gray-500 flex items-center">
+                    <CheckCircle className="h-4 w-4 mr-2 text-indigo-500" />
+                    Taxa de Conclusão
+                  </p>
+                  <p className="text-2xl font-bold text-gray-900 mt-2">
+                    {metrics.taxaConclusao.valor}%
+                  </p>
+                  <div className="flex items-center mt-2">
+                    <span
+                      className={`text-xs font-medium ${metrics.taxaConclusao.variacao >= 0 ? "text-green-600 bg-green-50 px-2 py-0.5 rounded-full" : "text-red-600 bg-red-50 px-2 py-0.5 rounded-full"}`}>
+                      {metrics.taxaConclusao.variacao >= 0 ? "↑" : "↓"}{" "}
+                      {Math.abs(metrics.taxaConclusao.variacao)}%
+                    </span>
+                    <span className="text-xs text-gray-500 ml-2">
+                      {metrics.taxaConclusao.textoVariacao}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Top Drivers */}
-        <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
-          <h3 className="text-lg font-bold text-gray-800 mb-4">
-            Top Motoristas
-          </h3>
-          <div className="space-y-4">
-            {topDrivers.map((driver, index) => (
-              <div key={index} className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-600">
-                    {driver.nome.charAt(0)}
+        {/* Seção de Gráficos e Análises */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Gráfico de Viagens por Hora */}
+          <div className="lg:col-span-2 space-y-6">
+            <div>
+              <div className="h-80">
+                <ViagensChart />
+              </div>
+            </div>
+
+            {/* Gráfico de Receita */}
+            <div className="bg-white p-6 rounded-xl border border-gray-200">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Receita
+                  </h3>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Análise de faturamento
+                  </p>
+                </div>
+                <div className="flex space-x-2">
+                  <button className="px-3 py-1 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">
+                    Receita
+                  </button>
+                  <button className="px-3 py-1 text-sm font-medium text-gray-500 rounded-lg hover:bg-gray-100">
+                    Lucro
+                  </button>
+                </div>
+              </div>
+              <div className="h-80">
+                <ReceitaChart />
+              </div>
+            </div>
+          </div>
+
+          {/* Atividades Recentes e Alertas */}
+          <div className="space-y-6">
+            {/* Card de Alertas */}
+            <div className="bg-white p-6 rounded-xl border border-gray-200">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Alertas e Notificações
+                </h3>
+                <button className="text-sm font-medium text-blue-600 hover:text-blue-700 flex items-center">
+                  Ver todos
+                  <ArrowUpRight className="ml-1 h-4 w-4" />
+                </button>
+              </div>
+              <div className="space-y-4">
+                {alertas.map((alerta) => (
+                  <div
+                    key={alerta.id}
+                    className={`p-3 rounded-lg border-l-4 ${
+                      alerta.tipo === "erro"
+                        ? "border-red-500 bg-red-50"
+                        : alerta.tipo === "aviso"
+                          ? "border-yellow-500 bg-yellow-50"
+                          : "border-blue-500 bg-blue-50"
+                    }`}>
+                    <div className="flex items-start">
+                      <div className="flex-shrink-0 mt-0.5">
+                        {getAlertaIcon(alerta.tipo)}
+                      </div>
+                      <div className="ml-3">
+                        <h4 className="text-sm font-medium text-gray-900">
+                          {alerta.titulo}
+                        </h4>
+                        <p className="text-sm text-gray-600 mt-0.5">
+                          {alerta.descricao}
+                        </p>
+                        <div className="mt-1 flex items-center text-xs text-gray-500">
+                          <Clock className="h-3 w-3 mr-1" />
+                          {alerta.data}
+                        </div>
+                      </div>
+                      {!alerta.lido && (
+                        <span className="ml-auto inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                          Novo
+                        </span>
+                      )}
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">
-                      {driver.nome}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {driver.viagens} viagens
-                    </p>
+                ))}
+              </div>
+            </div>
+
+            {/* Top Motoristas */}
+            <div className="bg-white p-6 rounded-xl border border-gray-200">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Top Motoristas
+                </h3>
+                <button className="text-sm font-medium text-blue-600 hover:text-blue-700 flex items-center">
+                  Ver ranking
+                  <ArrowUpRight className="ml-1 h-4 w-4" />
+                </button>
+              </div>
+              <div className="space-y-4">
+                {topMotoristas.map((motorista) => (
+                  <div
+                    key={motorista.id}
+                    className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition-colors">
+                    <div className="flex items-center space-x-3">
+                      <div className="relative">
+                        <div className="h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 font-medium">
+                          {motorista.nome
+                            .split(" ")
+                            .map((n) => n[0])
+                            .join("")}
+                        </div>
+                        <span
+                          className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white ${getStatusColor(motorista.status)}`}></span>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">
+                          {motorista.nome}
+                        </p>
+                        <div className="flex items-center text-xs text-gray-500">
+                          <span>{motorista.veiculo}</span>
+                          <span className="mx-1">•</span>
+                          <span className="flex items-center">
+                            <Star className="h-3 w-3 text-yellow-400 mr-0.5" />
+                            {motorista.avaliacao.toFixed(1)}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-medium text-gray-900">
+                        {motorista.viagens} viagens
+                      </p>
+                      <div className="flex items-center justify-end text-xs text-gray-500">
+                        <Clock className="h-3 w-3 mr-1" />
+                        {motorista.ultimaViagem}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Estatísticas e Análises */}
+        <div className="space-y-2">
+          <div className="flex justify-between items-center">
+            <button className="text-sm font-medium text-blue-600 hover:text-blue-700 flex items-center">
+              Ver relatório completo
+              <ArrowUpRight className="ml-1 h-4 w-4" />
+            </button>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+            {/* Card de Desempenho Mensal */}
+            <div className="bg-white p-6 rounded-xl border border-gray-200">
+              <div className="flex justify-between items-center mb-6">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Desempenho do Mês
+                  </h3>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Progresso em relação às metas
+                  </p>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm font-medium text-gray-500">
+                    Dez/2025
+                  </span>
+                  <button className="p-1 rounded-full hover:bg-gray-100">
+                    <svg
+                      className="h-5 w-5 text-gray-400"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div className="space-y-5">
+                {[
+                  /* Atualizado para português */
+                  {
+                    label: "Meta de Viagens",
+                    valor: "1.250",
+                    progresso: 75,
+                    cor: "bg-blue-500",
+                    icone: <MapPin className="h-4 w-4 text-blue-500" />,
+                    texto: "Em dia com a meta",
+                  },
+                  {
+                    label: "Faturamento",
+                    valor: formatarMoeda(2150000),
+                    progresso: 62,
+                    cor: "bg-green-500",
+                    icone: <DollarSign className="h-4 w-4 text-green-500" />,
+                    texto: "Abaixo da meta",
+                  },
+                  {
+                    label: "Novos Clientes",
+                    valor: "48",
+                    progresso: 80,
+                    cor: "bg-purple-500",
+                    icone: <Users className="h-4 w-4 text-purple-500" />,
+                    texto: "Acima da média",
+                  },
+                  {
+                    label: "Avaliação Média",
+                    valor: "4,8",
+                    progresso: 96,
+                    cor: "bg-yellow-500",
+                    icone: <Star className="h-4 w-4 text-yellow-500" />,
+                    texto: "Excelente",
+                  },
+                ].map((item, index) => (
+                  <div key={index}>
+                    <div className="flex justify-between items-center mb-1">
+                      <div className="flex items-center space-x-2">
+                        <div
+                          className={`p-1 rounded-md ${item.cor.replace("bg-", "bg-").replace("500", "100")}`}>
+                          {item.icone}
+                        </div>
+                        <span className="text-sm font-medium text-gray-700">
+                          {item.label}
+                        </span>
+                      </div>
+                      <span className="text-sm font-semibold text-gray-900">
+                        {item.valor}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
+                      <span>{item.texto}</span>
+                      <span>{item.progresso}%</span>
+                    </div>
+                    <div className="w-full bg-gray-100 rounded-full h-2 mb-4">
+                      <div
+                        className={`h-2 rounded-full ${item.cor}`}
+                        style={{ width: `${item.progresso}%` }}></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Card de Estatísticas de Viagem */}
+            <div className="bg-white p-6 rounded-xl border border-gray-200">
+              <div className="flex justify-between items-center mb-6">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Estatísticas de Viagem
+                  </h3>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Análise de desempenho
+                  </p>
+                </div>
+                <button className="p-1 rounded-full hover:bg-gray-100">
+                  <svg
+                    className="h-5 w-5 text-gray-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"
+                    />
+                  </svg>
+                </button>
+              </div>
+
+              <div className="space-y-5">
+                <div className="bg-blue-50 p-4 rounded-lg">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <p className="text-sm font-medium text-blue-800">
+                        Viagens Concluídas
+                      </p>
+                      <p className="text-2xl font-bold text-blue-900 mt-1">
+                        1,248
+                      </p>
+                      <div className="flex items-center mt-1">
+                        <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
+                          ↑ 12.5%
+                        </span>
+                        <span className="text-xs text-gray-500 ml-2">
+                          vs mês passado
+                        </span>
+                      </div>
+                    </div>
+                    <div className="p-2 bg-blue-100 rounded-lg">
+                      <CheckCircle className="h-6 w-6 text-blue-600" />
+                    </div>
                   </div>
                 </div>
-                <span className="text-sm font-semibold text-teal-600">
-                  {driver.ganho.toLocaleString()} Kz
-                </span>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-white p-4 border border-gray-100 rounded-lg shadow-sm">
+                    <p className="text-sm font-medium text-gray-500">
+                      Média Diária
+                    </p>
+                    <p className="text-xl font-bold text-gray-900 mt-1">42</p>
+                    <div className="flex items-center mt-1">
+                      <span className="text-xs font-medium text-green-600">
+                        ↑ 5.2%
+                      </span>
+                    </div>
+                  </div>
+                  <div className="bg-white p-4 border border-gray-100 rounded-lg shadow-sm">
+                    <p className="text-sm font-medium text-gray-500">
+                      Tempo Médio
+                    </p>
+                    <p className="text-xl font-bold text-gray-900 mt-1">
+                      18 min
+                    </p>
+                    <div className="flex items-center mt-1">
+                      <span className="text-xs font-medium text-red-600">
+                        ↓ 1.8%
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-sm font-medium text-gray-700">
+                      Taxa de Cancelamento
+                    </p>
+                    <p className="text-sm font-semibold text-gray-900">4.2%</p>
+                  </div>
+                  <div className="w-full bg-gray-100 rounded-full h-2">
+                    <div
+                      className="h-2 rounded-full bg-red-500"
+                      style={{ width: "4.2%" }}></div>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Meta: &lt;5% (dentro da meta)
+                  </p>
+                </div>
               </div>
-            ))}
+            </div>
           </div>
-          <button className="w-full mt-4 py-2 text-sm text-teal-600 font-medium hover:bg-teal-50 rounded-lg transition-colors">
-            Ver Ranking Completo
-          </button>
         </div>
       </div>
     </MainLayout>

@@ -7,8 +7,6 @@ import { useParams } from "next/navigation";
 import { ArrowLeft, MapPin, DollarSign, User } from "lucide-react";
 import Link from "next/link";
 import MainLayout from "@/components/layout/MainLayout";
-import { useFetch } from "@/hooks/useFetch";
-
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import Badge from "@/components/common/Badge";
 import { Viagem } from "@/types/viagem";
@@ -23,9 +21,97 @@ const DetalheViagem = () => {
   const params = useParams();
   const viagemId = params.id as string;
 
-  const { dados, carregando, erro } = useFetch<Viagem>(`/viagens/${viagemId}`, {
-    autoFetch: true,
-  });
+  // Mock data for static display
+  const mockViagens: Record<string, Viagem> = {
+    "v12345678": {
+      id: "v12345678",
+      clienteId: "c1",
+      clienteNome: "Maria Silva",
+      motoristaId: "m1",
+      motoristaNome: "João Santos",
+      viaturaId: "car1",
+      viaturaModelo: "Toyota Corolla",
+      origem: { latitude: -8.839988, longitude: 13.289437, endereco: "Rua Rainha Ginga, Luanda" },
+      destino: { latitude: -8.814667, longitude: 13.230111, endereco: "Aeroporto 4 de Fevereiro" },
+      dataPartida: new Date().toISOString(),
+      dataChegada: new Date(Date.now() + 1800000).toISOString(),
+      duracao: 30,
+      distancia: 15.5,
+      status: "emprogresss",
+      preco: 5000,
+      taxaPlataforma: 500,
+      comissaoMotorista: 4500,
+      lucroLiquido: 500,
+      tipoPagamento: "dinheiro",
+      localizacaoAtual: { latitude: -8.825, longitude: 13.25 },
+      avaliacao: 4.5,
+      comentario: "Ótimo motorista, muito profissional!"
+    },
+    "v87654321": {
+      id: "v87654321",
+      clienteId: "c2",
+      clienteNome: "Pedro Costa",
+      motoristaId: "m2",
+      motoristaNome: "Ana Oliveira",
+      viaturaId: "car2",
+      viaturaModelo: "Hyundai i10",
+      origem: { latitude: -8.85, longitude: 13.3, endereco: "Talatona, Luanda" },
+      destino: { latitude: -8.9, longitude: 13.4, endereco: "Benfica, Luanda" },
+      dataPartida: new Date(Date.now() - 7200000).toISOString(),
+      dataChegada: new Date(Date.now() - 5400000).toISOString(),
+      duracao: 30,
+      distancia: 8.2,
+      status: "concluida",
+      preco: 2500,
+      taxaPlataforma: 250,
+      comissaoMotorista: 2250,
+      lucroLiquido: 250,
+      tipoPagamento: "cartao",
+      avaliacao: 5,
+      comentario: "Perfeito!"
+    },
+    "v11223344": {
+      id: "v11223344",
+      clienteId: "c3",
+      clienteNome: "Carlos Ferreira",
+      origem: { latitude: -8.82, longitude: 13.24, endereco: "Mutamba, Luanda" },
+      destino: { latitude: -8.85, longitude: 13.35, endereco: "Kilamba Kiaxi" },
+      dataPartida: new Date(Date.now() - 1800000).toISOString(),
+      distancia: 12.0,
+      status: "solicitada",
+      preco: 4000,
+      taxaPlataforma: 400,
+      comissaoMotorista: 3600,
+      lucroLiquido: 400,
+      tipoPagamento: "carteira_digital"
+    },
+    "v55667788": {
+      id: "v55667788",
+      clienteId: "c4",
+      clienteNome: "Sofia Martins",
+      motoristaId: "m3",
+      motoristaNome: "Lucas Pereira",
+      viaturaId: "car3",
+      viaturaModelo: "Kia Picanto",
+      origem: { latitude: -8.81, longitude: 13.22, endereco: "Ilha do Cabo" },
+      destino: { latitude: -8.83, longitude: 13.26, endereco: "Maianga" },
+      dataPartida: new Date(Date.now() - 7200000).toISOString(),
+      dataChegada: new Date(Date.now() - 6900000).toISOString(),
+      duracao: 5,
+      distancia: 5.5,
+      status: "cancelada",
+      preco: 2000,
+      taxaPlataforma: 200,
+      comissaoMotorista: 1800,
+      lucroLiquido: 200,
+      tipoPagamento: "dinheiro",
+      motivoCancelamento: "Cliente não apareceu"
+    }
+  };
+
+  const dados = mockViagens[viagemId] || null;
+  const carregando = false;
+  const erro = !dados ? "Viagem não encontrada" : null;
 
   const calcularDuracao = (dataPartida: string, dataChegada?: string) => {
     if (!dataChegada) return "-";

@@ -214,10 +214,6 @@ const Clientes = () => {
     <MainLayout titulo="Gestão de Clientes">
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Clientes</h1>
-          <p className="text-gray-600">Gerencie sua base de clientes e visualize métricas</p>
-        </div>
         <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
           <button
             onClick={() => {
@@ -272,7 +268,6 @@ const Clientes = () => {
                 setBusca(e.target.value);
                 setPagina(1);
               }}
-              icone={<Search size={20} className="text-gray-400" />}
               className="w-full"
             />
           </div>
@@ -310,7 +305,7 @@ const Clientes = () => {
           </div>
 
           <div className="md:col-span-2">
-             <input
+            <input
               type="date"
               value={dataInicio}
               onChange={(e) => {
@@ -323,7 +318,7 @@ const Clientes = () => {
           </div>
 
           <div className="md:col-span-2">
-             <input
+            <input
               type="date"
               value={dataFim}
               onChange={(e) => {
@@ -335,10 +330,10 @@ const Clientes = () => {
             />
           </div>
         </div>
-        
+
         {/* Advanced Filters Row 2 */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center mt-4 pt-4 border-t border-gray-100">
-           <div className="md:col-span-3">
+          <div className="md:col-span-3">
             <select
               value={sortKey as string}
               onChange={(e) => setSortKey(e.target.value as keyof Cliente)}
@@ -349,8 +344,8 @@ const Clientes = () => {
               <option value="avaliacaoMedia">Ordenar: Avaliação</option>
               <option value="status">Ordenar: Status</option>
             </select>
-           </div>
-           <div className="md:col-span-2">
+          </div>
+          <div className="md:col-span-2">
             <select
               value={sortDir}
               onChange={(e) => setSortDir(e.target.value as any)}
@@ -358,8 +353,8 @@ const Clientes = () => {
               <option value="asc">Ascendente</option>
               <option value="desc">Descendente</option>
             </select>
-           </div>
-           <div className="md:col-span-2">
+          </div>
+          <div className="md:col-span-2">
             <select
               value={pageSize}
               onChange={(e) => {
@@ -371,10 +366,10 @@ const Clientes = () => {
               <option value={25}>25 por página</option>
               <option value={50}>50 por página</option>
             </select>
-           </div>
-           
-           <div className="md:col-span-5 flex justify-end">
-             <div className="relative group inline-block">
+          </div>
+
+          <div className="md:col-span-5 flex justify-end">
+            <div className="relative group inline-block">
               <button className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors h-[42px]">
                 <Filter size={18} />
                 Colunas
@@ -426,7 +421,7 @@ const Clientes = () => {
                 </label>
               </div>
             </div>
-           </div>
+          </div>
         </div>
       </div>
 
@@ -454,7 +449,9 @@ const Clientes = () => {
             <Search size={32} className="text-gray-400" />
           </div>
           <p className="text-lg font-medium">Nenhum cliente encontrado</p>
-          <p className="text-sm">Tente ajustar seus filtros ou adicione um novo cliente.</p>
+          <p className="text-sm">
+            Tente ajustar seus filtros ou adicione um novo cliente.
+          </p>
         </div>
       ) : (
         <>
@@ -538,7 +535,9 @@ const Clientes = () => {
                       {cols.contato && (
                         <td className="px-6 py-4">
                           <div className="flex flex-col text-sm">
-                            <span className="text-gray-900 font-medium">{cliente.email}</span>
+                            <span className="text-gray-900 font-medium">
+                              {cliente.email}
+                            </span>
                             <span className="text-gray-500 text-xs">
                               {formatarTelefone(cliente.telefone)}
                             </span>
@@ -578,16 +577,20 @@ const Clientes = () => {
                             title="Editar">
                             <Edit size={18} />
                           </Link>
-                          
+
                           <button
                             onClick={() => handleSuspenderCliente(cliente.id)}
-                            className={`p-2 rounded-full transition-colors ${cliente.status === 'suspenso' ? 'text-green-600 hover:bg-green-50' : 'text-orange-600 hover:bg-orange-50'}`}
-                            title={cliente.status === "suspenso" ? "Reativar" : "Suspender"}>
+                            className={`p-2 rounded-full transition-colors ${cliente.status === "suspenso" ? "text-green-600 hover:bg-green-50" : "text-orange-600 hover:bg-orange-50"}`}
+                            title={
+                              cliente.status === "suspenso"
+                                ? "Reativar"
+                                : "Suspender"
+                            }>
                             {cliente.status === "suspenso" ? (
-                                <CheckSquare size={18} />
-                              ) : (
-                                <Ban size={18} />
-                              )}
+                              <CheckSquare size={18} />
+                            ) : (
+                              <Ban size={18} />
+                            )}
                           </button>
 
                           <button

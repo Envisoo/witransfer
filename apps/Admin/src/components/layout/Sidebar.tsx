@@ -40,7 +40,7 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false, onClose }) => {
   return (
     <aside
       className={`
-        bg-gradient-to-b from-teal-700 to-teal-900 text-white
+        bg-gradient-to-b from-primary-700 to-primary-800 text-white
         ${
           mobile
             ? "fixed inset-0 z-50 w-64 overflow-y-auto"
@@ -48,7 +48,7 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false, onClose }) => {
         }
       `}>
       {/* Header */}
-      <div className="p-4 border-b border-teal-600">
+      <div className="p-4 border-b border-primary-600">
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-bold">witransfer</h1>
           {mobile && (
@@ -57,7 +57,7 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false, onClose }) => {
             </button>
           )}
         </div>
-        <p className="text-xs text-teal-100 mt-1">Sistema de Gestão</p>
+        <p className="text-xs text-primary-100 mt-1">Sistema de Gestão</p>
       </div>
 
       {/* Navigation */}
@@ -73,13 +73,15 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false, onClose }) => {
               onClick={mobile ? onClose : undefined}
               className={`
                 flex items-center gap-3 px-4 py-3 rounded-lg 
-                transition-all duration-200
+                hover:bg-primary-600 transition-colors duration-200
                 ${
                   isActive
-                    ? "bg-white text-teal-700 font-semibold"
-                    : "text-teal-100 hover:bg-teal-600"
+                    ? "bg-white text-primary-700 font-semibold"
+                    : "text-primary-100"
                 }
-              `}>
+              `}
+              onMouseEnter={() => {}}
+              onMouseLeave={() => {}}>
               <Icon size={20} />
               <span>{item.label}</span>
             </Link>
@@ -88,8 +90,8 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false, onClose }) => {
       </nav>
 
       {/* Footer */}
-      <div className="p-4 border-t border-teal-600">
-        <div className="text-xs text-teal-200">
+      <div className="p-4 border-t border-primary-600">
+        <div className="text-xs text-primary-200">
           <p>v1.0.0</p>
           <p>© 2024 witransfer</p>
         </div>

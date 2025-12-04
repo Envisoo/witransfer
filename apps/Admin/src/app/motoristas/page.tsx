@@ -80,12 +80,6 @@ const Motoristas = () => {
     <MainLayout titulo="Gestão de Motoristas">
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Motoristas</h1>
-          <p className="text-gray-600">
-            Gerenciar cadastro e dados dos motoristas
-          </p>
-        </div>
         <Link href="/motoristas/novo" className="w-full md:w-auto">
           <Button className="flex items-center justify-center gap-2 w-full md:w-auto">
             <Plus size={20} />
@@ -102,7 +96,6 @@ const Motoristas = () => {
               placeholder="Buscar por nome, email ou telefone..."
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
-              icone={<Search size={20} className="text-gray-400" />}
               className="w-full"
             />
           </div>
