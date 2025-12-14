@@ -13,7 +13,6 @@ import {
   Download,
   Filter,
   CheckSquare,
-  Square,
 } from "lucide-react";
 import Link from "next/link";
 import MainLayout from "@/components/layout/MainLayout";
@@ -37,30 +36,18 @@ const Clientes = () => {
   const [sortKey, setSortKey] = useState<keyof Cliente>("nome");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
   const [cols, setCols] = useState({
-    contato: true,
+    email: true,
+    telefone: true,
     viagens: true,
     status: true,
     dataCadastro: true,
   });
   const { sucesso } = useNotification();
-  const [selectedClients, setSelectedClients] = useState<string[]>([]);
+
 
   const [clientes, setClientes] = useState<Cliente[]>([
     {
       id: "1",
-      nome: "Carlos Silva",
-      email: "carlos@email.com",
-      telefone: "923456789",
-      dataNascimento: "1990-03-10",
-      endereco: "Talatona, Luanda",
-      status: "ativo",
-      dataCadastro: "2024-01-12",
-      numeroViagens: 56,
-      avaliacaoMedia: 4.6,
-      ultimaAtualizacao: new Date().toISOString(),
-    },
-    {
-      id: "2",
       nome: "Ana Pereira",
       email: "ana@email.com",
       telefone: "924111222",
@@ -70,6 +57,19 @@ const Clientes = () => {
       dataCadastro: "2023-11-05",
       numeroViagens: 34,
       avaliacaoMedia: 4.3,
+      ultimaAtualizacao: new Date().toISOString(),
+    },
+    {
+      id: "2",
+      nome: "Carlos Silva",
+      email: "carlos@email.com",
+      telefone: "923456789",
+      dataNascimento: "1990-03-10",
+      endereco: "Talatona, Luanda",
+      status: "ativo",
+      dataCadastro: "2024-01-12",
+      numeroViagens: 56,
+      avaliacaoMedia: 4.6,
       ultimaAtualizacao: new Date().toISOString(),
     },
     {
@@ -194,21 +194,7 @@ const Clientes = () => {
     sucesso("Cliente atualizado");
   };
 
-  const toggleSelectAll = () => {
-    if (selectedClients.length === itensPagina.length) {
-      setSelectedClients([]);
-    } else {
-      setSelectedClients(itensPagina.map((c) => c.id));
-    }
-  };
 
-  const toggleSelect = (id: string) => {
-    if (selectedClients.includes(id)) {
-      setSelectedClients(selectedClients.filter((cId) => cId !== id));
-    } else {
-      setSelectedClients([...selectedClients, id]);
-    }
-  };
 
   return (
     <MainLayout titulo="Gestão de Clientes">
@@ -378,13 +364,24 @@ const Clientes = () => {
                 <label className="flex items-center gap-2 px-3 py-1 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">
                   <input
                     type="checkbox"
-                    checked={cols.contato}
+                    checked={cols.email}
                     onChange={(e) =>
-                      setCols({ ...cols, contato: e.target.checked })
+                      setCols({ ...cols, email: e.target.checked })
                     }
                     className="rounded text-teal-600 focus:ring-teal-500"
                   />
-                  Contato
+                  Email
+                </label>
+                <label className="flex items-center gap-2 px-3 py-1 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={cols.telefone}
+                    onChange={(e) =>
+                      setCols({ ...cols, telefone: e.target.checked })
+                    }
+                    className="rounded text-teal-600 focus:ring-teal-500"
+                  />
+                  Telefone
                 </label>
                 <label className="flex items-center gap-2 px-3 py-1 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">
                   <input
@@ -425,22 +422,7 @@ const Clientes = () => {
         </div>
       </div>
 
-      {/* Bulk Actions Bar (Visible when items selected) */}
-      {selectedClients.length > 0 && (
-        <div className="bg-teal-50 px-6 py-3 flex items-center justify-between border border-teal-100 rounded-lg mb-6">
-          <span className="text-sm font-medium text-teal-800">
-            {selectedClients.length} clientes selecionados
-          </span>
-          <div className="flex gap-3">
-            <button className="text-xs font-medium text-red-600 hover:text-red-700 bg-white px-3 py-1.5 rounded border border-red-200 hover:bg-red-50 transition-colors">
-              Excluir Selecionados
-            </button>
-            <button className="text-xs font-medium text-gray-600 hover:text-gray-700 bg-white px-3 py-1.5 rounded border border-gray-200 hover:bg-gray-50 transition-colors">
-              Exportar Selecionados
-            </button>
-          </div>
-        </div>
-      )}
+
 
       {/* Tabela */}
       {itensPagina.length === 0 ? (
@@ -460,24 +442,20 @@ const Clientes = () => {
               <table className="w-full whitespace-nowrap">
                 <thead className="bg-gray-50 border-b border-gray-200">
                   <tr>
-                    <th className="px-6 py-4 w-10">
-                      <button
-                        onClick={toggleSelectAll}
-                        className="text-gray-400 hover:text-teal-600 flex items-center">
-                        {selectedClients.length === itensPagina.length &&
-                        itensPagina.length > 0 ? (
-                          <CheckSquare size={18} className="text-teal-600" />
-                        ) : (
-                          <Square size={18} />
-                        )}
-                      </button>
+                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+                      ID
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
                       Cliente
                     </th>
-                    {cols.contato && (
+                    {cols.email && (
                       <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
-                        Contato
+                        Email
+                      </th>
+                    )}
+                    {cols.telefone && (
+                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+                        Telefone
                       </th>
                     )}
                     {cols.viagens && (
@@ -504,17 +482,9 @@ const Clientes = () => {
                   {itensPagina.map((cliente) => (
                     <tr
                       key={cliente.id}
-                      className={`hover:bg-gray-50 transition-colors duration-150 ${selectedClients.includes(cliente.id) ? "bg-teal-50/30" : ""}`}>
-                      <td className="px-6 py-4">
-                        <button
-                          onClick={() => toggleSelect(cliente.id)}
-                          className="text-gray-400 hover:text-teal-600 flex items-center">
-                          {selectedClients.includes(cliente.id) ? (
-                            <CheckSquare size={18} className="text-teal-600" />
-                          ) : (
-                            <Square size={18} />
-                          )}
-                        </button>
+                      className="hover:bg-gray-50 transition-colors duration-150">
+                      <td className="px-6 py-4 text-sm text-gray-500">
+                        #{cliente.id}
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
@@ -532,16 +502,14 @@ const Clientes = () => {
                           </div>
                         </div>
                       </td>
-                      {cols.contato && (
-                        <td className="px-6 py-4">
-                          <div className="flex flex-col text-sm">
-                            <span className="text-gray-900 font-medium">
-                              {cliente.email}
-                            </span>
-                            <span className="text-gray-500 text-xs">
-                              {formatarTelefone(cliente.telefone)}
-                            </span>
-                          </div>
+                      {cols.email && (
+                        <td className="px-6 py-4 text-sm text-gray-600">
+                          {cliente.email}
+                        </td>
+                      )}
+                      {cols.telefone && (
+                        <td className="px-6 py-4 text-sm text-gray-600">
+                          {formatarTelefone(cliente.telefone)}
                         </td>
                       )}
                       {cols.viagens && (
