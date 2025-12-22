@@ -38,6 +38,7 @@ const FormularioCadastroMotorista: React.FC<FormularioCadastroMotoristaProps> = 
     cartaConducao: '',
     dataInicio: '',
     status: 'offline',
+    disponibilidade: 'Ativo'
   };
 
   const { valores, erros, enviando, mudar, definirErro, enviar } = useForm({

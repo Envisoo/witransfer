@@ -10,13 +10,13 @@ import {
   Trash2, 
   User,
   FileText,
-  Briefcase,
+  
   TrendingUp,
   AlertTriangle,
   Car,
   DollarSign,
   Star,
-  Clock,
+  
   MapPin,
   Phone,
   Mail,
@@ -28,8 +28,7 @@ import {
   CheckCircle,
   XCircle,
   AlertCircle,
-  Camera,
-  Plus,
+  
   Users
 } from 'lucide-react';
 import Link from 'next/link';

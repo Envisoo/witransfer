@@ -18,7 +18,8 @@ type BadgeVariant =
   | "default"
   | "secondary"
   | "outline"
-  | "destructive";
+  | "destructive"
+  | "error";
 
 interface BadgeProps {
   variant?: BadgeVariant;
@@ -42,6 +43,7 @@ const variantClasses: Record<BadgeVariant, string> = {
   secondary: "status-secondary",
   outline: "status-outline",
   destructive: "status-destructive",
+  error: "bg-red-100 text-red-800",
   default: "bg-gray-100 text-gray-800",
 };
 

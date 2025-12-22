@@ -28,7 +28,6 @@ import {
   formatarData,
   formatarMoeda,
   formatarDistancia,
-  formatarDuracao,
 } from "@/lib/formatters";
 
 const DetalheViagem = () => {
@@ -70,13 +69,6 @@ const DetalheViagem = () => {
   const carregando = false;
   const erro = !dados ? "Viagem não encontrada" : null;
 
-  const calcularDuracao = (dataPartida: string, dataChegada?: string) => {
-    if (!dataChegada) return "-";
-    const partida = new Date(dataPartida);
-    const chegada = new Date(dataChegada);
-    const diff = Math.floor((chegada.getTime() - partida.getTime()) / 60000);
-    return formatarDuracao(diff);
-  };
 
   const statusVariant = (status: string) => {
     switch (status) {

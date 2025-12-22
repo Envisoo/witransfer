@@ -5,12 +5,12 @@
 import React, { useState } from "react";
 import MainLayout from "@/components/layout/MainLayout";
 import {
-  Bell, Mail, MessageSquare, Settings, TrendingUp, Users, Send, Clock, Check, X,
-  Search, Filter, Download, Plus, ChevronDown, Calendar, Target, BarChart3,
-  Eye, Edit, Trash2, Copy, FileText, Zap, ArrowUpRight
+  Bell, Settings,  Users, Send, X,
+  Search, Plus, Target, BarChart3,
+  Eye, Edit, Trash2, Copy, FileText, 
 } from "lucide-react";
 import {
-  AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, PieChart, Pie, Cell
 } from "recharts";
 
@@ -42,11 +42,11 @@ const NotificacoesPage = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState("all");
-  const [filterStatus, setFilterStatus] = useState("all");
+  const [filterStatus] = useState("all");
   const [showNewModal, setShowNewModal] = useState(false);
-  const [showTemplateModal, setShowTemplateModal] = useState(false);
-  const [showCampaignModal, setShowCampaignModal] = useState(false);
-  const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
+  const [, setShowTemplateModal] = useState(false);
+  const [, setShowCampaignModal] = useState(false);
+  const [, setSelectedNotification] = useState<Notification | null>(null);
 
   // Form states
   const [formTitle, setFormTitle] = useState("");
@@ -74,7 +74,7 @@ const NotificacoesPage = () => {
     },
   ]);
 
-  const [templates, setTemplates] = useState<Template[]>([
+  const [templates] = useState<Template[]>([
     { id: "1", name: "Bem-vindo", subject: "Bem-vindo ao WiTransfer!", content: "Olá {nome}, obrigado por se juntar...", type: "email", lastUsed: new Date(), timesUsed: 156 },
     { id: "2", name: "Confirmação", subject: "Viagem Confirmada", content: "Sua viagem foi confirmada para {data}...", type: "push", lastUsed: new Date(), timesUsed: 892 },
     { id: "3", name: "Lembrete", subject: "Não esqueça!", content: "Sua viagem está próxima...", type: "sms", lastUsed: new Date(), timesUsed: 234 },
@@ -136,9 +136,6 @@ const NotificacoesPage = () => {
     resetForm();
   };
 
-  const handleCreateTemplate = () => {
-    setShowTemplateModal(false);
-  };
 
   const handleDeleteNotification = (id: string) => {
     if (confirm("Tem certeza que deseja excluir?")) {

@@ -15,11 +15,6 @@ import {
   Mail, 
   MapPin, 
   Star,
-  Shield,
-  MessageSquare,
-  CheckCircle,
-  XCircle,
-  AlertTriangle,
   History
 } from "lucide-react";
 import Link from "next/link";

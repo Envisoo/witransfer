@@ -506,7 +506,7 @@ const Motoristas = () => {
                     )}
                     {cols.status && (
                       <td className="px-6 py-4">
-                        <Badge variant={getStatusBadgeVariant(motorista.status) as any}>
+                        <Badge variant={getStatusBadgeVariant(motorista.status)}>
                           {motorista.status.charAt(0).toUpperCase() + motorista.status.slice(1)}
                         </Badge>
                       </td>
@@ -586,7 +586,7 @@ const Motoristas = () => {
                 </div>
                 
                 <div className="absolute top-3 right-3">
-                  <Badge variant={getStatusBadgeVariant(motorista.status) as any} className="shadow-lg">
+                  <Badge variant={getStatusBadgeVariant(motorista.status)} className="shadow-lg">
                     {motorista.status.charAt(0).toUpperCase() + motorista.status.slice(1)}
                   </Badge>
                 </div>
