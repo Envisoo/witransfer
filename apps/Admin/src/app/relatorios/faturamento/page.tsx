@@ -1,10 +1,11 @@
+/** @format */
+
 'use client';
 
 import React, { useState } from 'react';
-import { ArrowLeft, Download, DollarSign, TrendingUp, TrendingDown, Wallet, PieChartIcon } from 'lucide-react';
+import { ArrowLeft, Download, DollarSign, TrendingUp, Wallet, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import MainLayout from '@/components/layout/MainLayout';
-import Button from '@/components/common/Button';
 import { formatarMoeda } from '@/lib/formatters';
 import {
   BarChart,
@@ -13,13 +14,11 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
   LineChart,
   Line,
-  PieChart,
-  Pie,
-  Cell,
+  AreaChart,
+  Area,
 } from 'recharts';
 
 // Dados estáticos
@@ -40,22 +39,15 @@ const dadosRelatorio = {
     { motoristaNome: 'Isabel Rocha', receita: 218000, comissao: 174400, lucro: 43600 },
   ],
   evolucaoMensal: [
-    { mes: 'Jul', receita: 2420000, pagamentos: 1968000, lucro: 242000 },
-    { mes: 'Ago', receita: 2580000, pagamentos: 2098000, lucro: 258000 },
-    { mes: 'Set', receita: 2690000, pagamentos: 2187000, lucro: 269000 },
-    { mes: 'Out', receita: 2760000, pagamentos: 2243000, lucro: 276000 },
-    { mes: 'Nov', receita: 2847500, pagamentos: 2315000, lucro: 284750 },
+    { mes: 'Jul', receita: 2420000, lucro: 242000 },
+    { mes: 'Ago', receita: 2580000, lucro: 258000 },
+    { mes: 'Set', receita: 2690000, lucro: 269000 },
+    { mes: 'Out', receita: 2760000, lucro: 276000 },
+    { mes: 'Nov', receita: 2847500, lucro: 284750 },
   ],
 };
 
-const distribuicaoReceita = [
-  { name: 'Pagamentos Motoristas', value: 2315000, color: '#3b82f6' },
-  { name: 'Taxas', value: 142375, color: '#f59e0b' },
-  { name: 'Despesas', value: 95200, color: '#ef4444' },
-  { name: 'Lucro Líquido', value: 294925, color: '#14b8a6' },
-];
-
-const Relatoriofaturamento = () => {
+const RelatorioFaturamento = () => {
   const [dataInicio, setDataInicio] = useState('2024-11-01');
   const [dataFim, setDataFim] = useState('2024-11-30');
 
@@ -69,94 +61,104 @@ const Relatoriofaturamento = () => {
 
   return (
     <MainLayout titulo="Relatório de Faturamento">
+      {/* Breadcrumb */}
       <div className="mb-6">
         <Link
           href="/relatorios"
-          className="flex items-center gap-2 text-teal-600 hover:text-teal-700 font-medium transition-colors"
+          className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium transition-colors text-sm"
         >
-          <ArrowLeft size={20} />
+          <ArrowLeft size={16} />
           Voltar para Relatórios
         </Link>
       </div>
 
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Relatório de Faturamento</h1>
-        <p className="text-gray-600">Análise completa de receitas, pagamentos e lucros por período</p>
+        <h1 className="text-2xl font-bold text-gray-900 mb-1">Relatório de Faturamento</h1>
+        <p className="text-sm text-gray-500">Análise completa de receitas, pagamentos e lucros por período</p>
       </div>
 
       {/* Filtros */}
-      <div className="bg-white rounded-xl shadow-md p-6 mb-8">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">Filtros de Período</h3>
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
+        <h3 className="text-sm font-semibold text-gray-700 mb-4 uppercase tracking-wide">Período de Análise</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="form-label">Data Inicial</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Data Inicial</label>
             <input
               type="date"
               value={dataInicio}
               onChange={(e) => setDataInicio(e.target.value)}
-              className="form-input"
+              className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
             />
           </div>
           <div>
-            <label className="form-label">Data Final</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Data Final</label>
             <input
               type="date"
               value={dataFim}
               onChange={(e) => setDataFim(e.target.value)}
-              className="form-input"
+              className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
             />
           </div>
-          <div className="flex items-end gap-2">
-            <Button variant="primary" fullWidth>
+          <div className="flex items-end">
+            <button className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
               Atualizar Relatório
-            </Button>
+            </button>
           </div>
         </div>
       </div>
 
       {/* Cards de Resumo */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
-        <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-6 text-white shadow-lg">
-          <div className="flex items-center justify-between mb-4">
-            <DollarSign size={32} className="opacity-80" />
-            <TrendingUp size={20} className="opacity-60" />
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+          <div className="flex justify-between items-start mb-4">
+            <div className="p-3 bg-blue-50 rounded-xl">
+              <DollarSign className="text-blue-600" size={20} />
+            </div>
           </div>
-          <p className="text-sm font-medium opacity-90 mb-1">Receita Total</p>
-          <p className="text-2xl font-bold">{formatarMoeda(dadosRelatorio.receita)}</p>
+          <h3 className="text-gray-500 text-sm font-medium mb-1">Receita Total</h3>
+          <p className="text-2xl font-bold text-gray-900">{formatarMoeda(dadosRelatorio.receita)}</p>
         </div>
 
-        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 text-white shadow-lg">
-          <div className="flex items-center justify-between mb-4">
-            <Wallet size={32} className="opacity-80" />
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+          <div className="flex justify-between items-start mb-4">
+            <div className="p-3 bg-indigo-50 rounded-xl">
+              <Wallet className="text-indigo-600" size={20} />
+            </div>
           </div>
-          <p className="text-sm font-medium opacity-90 mb-1">Pagamentos</p>
-          <p className="text-2xl font-bold">{formatarMoeda(dadosRelatorio.pagamentos)}</p>
+          <h3 className="text-gray-500 text-sm font-medium mb-1">Pagamentos</h3>
+          <p className="text-2xl font-bold text-gray-900">{formatarMoeda(dadosRelatorio.pagamentos)}</p>
         </div>
 
-        <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl p-6 text-white shadow-lg">
-          <div className="flex items-center justify-between mb-4">
-            <TrendingDown size={32} className="opacity-80" />
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+          <div className="flex justify-between items-start mb-4">
+            <div className="p-3 bg-purple-50 rounded-xl">
+              <TrendingUp className="text-purple-600" size={20} />
+            </div>
           </div>
-          <p className="text-sm font-medium opacity-90 mb-1">Taxas</p>
-          <p className="text-2xl font-bold">{formatarMoeda(dadosRelatorio.taxas)}</p>
+          <h3 className="text-gray-500 text-sm font-medium mb-1">Taxas</h3>
+          <p className="text-2xl font-bold text-gray-900">{formatarMoeda(dadosRelatorio.taxas)}</p>
         </div>
 
-        <div className="bg-gradient-to-br from-red-500 to-red-600 rounded-xl p-6 text-white shadow-lg">
-          <div className="flex items-center justify-between mb-4">
-            <TrendingDown size={32} className="opacity-80" />
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+          <div className="flex justify-between items-start mb-4">
+            <div className="p-3 bg-red-50 rounded-xl">
+              <DollarSign className="text-red-600" size={20} />
+            </div>
           </div>
-          <p className="text-sm font-medium opacity-90 mb-1">Despesas</p>
-          <p className="text-2xl font-bold">{formatarMoeda(dadosRelatorio.despesas)}</p>
+          <h3 className="text-gray-500 text-sm font-medium mb-1">Despesas</h3>
+          <p className="text-2xl font-bold text-gray-900">{formatarMoeda(dadosRelatorio.despesas)}</p>
         </div>
 
-        <div className="bg-gradient-to-br from-teal-500 to-teal-600 rounded-xl p-6 text-white shadow-lg">
-          <div className="flex items-center justify-between mb-4">
-            <TrendingUp size={32} className="opacity-80" />
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+          <div className="flex justify-between items-start mb-4">
+            <div className="p-3 bg-teal-50 rounded-xl">
+              <TrendingUp className="text-teal-600" size={20} />
+            </div>
           </div>
-          <p className="text-sm font-medium opacity-90 mb-1">Lucro Líquido</p>
-          <p className="text-2xl font-bold">{formatarMoeda(dadosRelatorio.lucroLiquido)}</p>
-          <p className="text-xs opacity-75 mt-2">
+          <h3 className="text-gray-500 text-sm font-medium mb-1">Lucro Líquido</h3>
+          <p className="text-2xl font-bold text-gray-900">{formatarMoeda(dadosRelatorio.lucroLiquido)}</p>
+          <p className="text-xs text-gray-400 mt-1">
             Margem: {((dadosRelatorio.lucroLiquido / dadosRelatorio.receita) * 100).toFixed(1)}%
           </p>
         </div>
@@ -165,144 +167,145 @@ const Relatoriofaturamento = () => {
       {/* Gráficos */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Evolução Mensal */}
-        <div className="bg-white rounded-xl shadow-md p-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-6 flex items-center gap-2">
-            <TrendingUp className="text-teal-600" size={20} />
-            Evolução Mensal
-          </h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={dadosRelatorio.evolucaoMensal}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-              <XAxis dataKey="mes" stroke="#6b7280" />
-              <YAxis stroke="#6b7280" />
-              <Tooltip 
-                formatter={(value) => formatarMoeda(value as number)}
-                contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb' }}
-              />
-              <Legend />
-              <Line 
-                type="monotone" 
-                dataKey="receita" 
-                stroke="#10b981" 
-                strokeWidth={3}
-                name="Receita"
-                dot={{ fill: '#10b981', r: 5 }}
-              />
-              <Line 
-                type="monotone" 
-                dataKey="lucro" 
-                stroke="#14b8a6" 
-                strokeWidth={3}
-                name="Lucro"
-                dot={{ fill: '#14b8a6', r: 5 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-lg font-bold text-gray-900">Evolução Mensal</h3>
+            <button className="text-sm text-blue-600 font-medium hover:underline">Ver Detalhes</button>
+          </div>
+          <div className="h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={dadosRelatorio.evolucaoMensal}>
+                <defs>
+                  <linearGradient id="colorReceita" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.1}/>
+                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                  </linearGradient>
+                  <linearGradient id="colorLucro" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#14b8a6" stopOpacity={0.1}/>
+                    <stop offset="95%" stopColor="#14b8a6" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                <XAxis 
+                  dataKey="mes" 
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: '#9ca3af', fontSize: 12 }}
+                  dy={10}
+                />
+                <YAxis 
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: '#9ca3af', fontSize: 12 }}
+                  tickFormatter={(value) => `${value / 1000}k`}
+                />
+                <Tooltip 
+                  formatter={(value) => formatarMoeda(value as number)}
+                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                />
+                <Area 
+                  type="monotone" 
+                  dataKey="receita" 
+                  stroke="#3b82f6" 
+                  strokeWidth={3}
+                  fillOpacity={1}
+                  fill="url(#colorReceita)"
+                  name="Receita"
+                />
+                <Area 
+                  type="monotone" 
+                  dataKey="lucro" 
+                  stroke="#14b8a6" 
+                  strokeWidth={3}
+                  fillOpacity={1}
+                  fill="url(#colorLucro)"
+                  name="Lucro"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
         </div>
 
-        {/* Distribuição de Receita */}
-        <div className="bg-white rounded-xl shadow-md p-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-6 flex items-center gap-2">
-            <PieChartIcon className="text-teal-600" size={20} />
-            Distribuição de Receita
-          </h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie
-                data={distribuicaoReceita}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                label={({ name, percent }) => `${name.split(' ')[0]}: ${(percent * 100).toFixed(0)}%`}
-                outerRadius={90}
-                fill="#8884d8"
-                dataKey="value"
-              >
-                {distribuicaoReceita.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Pie>
-              <Tooltip formatter={(value) => formatarMoeda(value as number)} />
-            </PieChart>
-          </ResponsiveContainer>
+        {/* Top 5 Motoristas */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-lg font-bold text-gray-900">Top 5 por Receita</h3>
+            <button className="text-sm text-blue-600 font-medium hover:underline">Ver Todos</button>
+          </div>
+          <div className="h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={dadosRelatorio.porMotorista.slice(0, 5)}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                <XAxis 
+                  dataKey="motoristaNome" 
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: '#9ca3af', fontSize: 11 }}
+                  angle={-15}
+                  textAnchor="end"
+                  height={80}
+                />
+                <YAxis 
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: '#9ca3af', fontSize: 12 }}
+                  tickFormatter={(value) => `${value / 1000}k`}
+                />
+                <Tooltip 
+                  formatter={(value) => formatarMoeda(value as number)}
+                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                />
+                <Bar dataKey="receita" fill="#3b82f6" radius={[8, 8, 0, 0]} name="Receita" />
+                <Bar dataKey="lucro" fill="#14b8a6" radius={[8, 8, 0, 0]} name="Lucro" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </div>
-      </div>
-
-      {/* Comparativo por Motorista */}
-      <div className="bg-white rounded-xl shadow-md p-6 mb-8">
-        <h3 className="text-lg font-semibold text-gray-800 mb-6 flex items-center gap-2">
-          <BarChart className="text-teal-600" />
-          Comparativo de Receita por Motorista
-        </h3>
-        <ResponsiveContainer width="100%" height={400}>
-          <BarChart data={dadosRelatorio.porMotorista}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-            <XAxis dataKey="motoristaNome" stroke="#6b7280" angle={-15} textAnchor="end" height={100} />
-            <YAxis stroke="#6b7280" />
-            <Tooltip 
-              formatter={(value) => formatarMoeda(value as number)}
-              contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb' }}
-            />
-            <Legend />
-            <Bar dataKey="receita" fill="#10b981" name="Receita" radius={[8, 8, 0, 0]} />
-            <Bar dataKey="comissao" fill="#3b82f6" name="Comissão Motorista" radius={[8, 8, 0, 0]} />
-            <Bar dataKey="lucro" fill="#14b8a6" name="Lucro" radius={[8, 8, 0, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
       </div>
 
       {/* Tabela de Motoristas */}
-      <div className="bg-white rounded-xl shadow-md overflow-hidden mb-8">
-        <div className="p-6 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-            <DollarSign className="text-teal-600" size={20} />
-            Faturamento Detalhado por Motorista
-          </h3>
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8">
+        <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+          <h3 className="text-lg font-bold text-gray-900">Faturamento por Motorista</h3>
+          <Link href="/motoristas" className="text-sm text-blue-600 font-medium hover:underline flex items-center gap-1">
+            Ver Motoristas
+            <ChevronRight size={16} />
+          </Link>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="bg-gray-50/50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">Posição</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">Motorista</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">Receita</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">Comissão</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">Lucro</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">Margem</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">#</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Motorista</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Receita</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Comissão</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Lucro</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Margem</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-100">
               {dadosRelatorio.porMotorista.map((motorista, idx) => (
-                <tr key={idx} className="hover:bg-gray-50 transition-colors">
+                <tr key={idx} className="hover:bg-gray-50/50 transition-colors">
                   <td className="px-6 py-4">
-                    <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold ${
-                      idx === 0 ? 'bg-yellow-100 text-yellow-700' :
-                      idx === 1 ? 'bg-gray-200 text-gray-700' :
-                      idx === 2 ? 'bg-orange-100 text-orange-700' :
-                      'bg-gray-100 text-gray-600'
-                    }`}>
-                      {idx + 1}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center text-teal-700 font-semibold">
-                        {motorista.motoristaNome.charAt(0)}
-                      </div>
-                      <span className="text-sm font-medium text-gray-900">{motorista.motoristaNome}</span>
+                    <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center">
+                      <span className="font-bold text-blue-600 text-sm">{idx + 1}</span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-sm font-semibold text-green-600">
-                    {formatarMoeda(motorista.receita)}
-                  </td>
-                  <td className="px-6 py-4 text-sm font-semibold text-blue-600">
-                    {formatarMoeda(motorista.comissao)}
-                  </td>
-                  <td className="px-6 py-4 text-sm font-semibold text-teal-600">
-                    {formatarMoeda(motorista.lucro)}
+                  <td className="px-6 py-4">
+                    <span className="font-medium text-gray-900">{motorista.motoristaNome}</span>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="inline-block px-3 py-1 bg-teal-100 text-teal-700 rounded-full text-xs font-semibold">
+                    <span className="font-medium text-gray-600">{formatarMoeda(motorista.receita)}</span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="text-gray-600">{formatarMoeda(motorista.comissao)}</span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="font-medium text-gray-900">{formatarMoeda(motorista.lucro)}</span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="inline-block px-3 py-1 bg-teal-50 text-teal-700 rounded-full text-xs font-semibold">
                       {((motorista.lucro / motorista.receita) * 100).toFixed(1)}%
                     </span>
                   </td>
@@ -313,23 +316,23 @@ const Relatoriofaturamento = () => {
         </div>
 
         {/* Total Geral */}
-        <div className="bg-gray-50 p-6 border-t border-gray-200">
+        <div className="bg-gray-50 p-6 border-t border-gray-100">
           <div className="grid grid-cols-4 gap-4">
             <div>
-              <p className="text-sm text-gray-600 mb-1">Total Receita</p>
-              <p className="text-xl font-bold text-green-600">{formatarMoeda(dadosRelatorio.receita)}</p>
+              <p className="text-sm text-gray-500 mb-1">Total Receita</p>
+              <p className="text-xl font-bold text-gray-900">{formatarMoeda(dadosRelatorio.receita)}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-600 mb-1">Total Comissões</p>
-              <p className="text-xl font-bold text-blue-600">{formatarMoeda(dadosRelatorio.pagamentos)}</p>
+              <p className="text-sm text-gray-500 mb-1">Total Comissões</p>
+              <p className="text-xl font-bold text-gray-900">{formatarMoeda(dadosRelatorio.pagamentos)}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-600 mb-1">Total Lucro</p>
-              <p className="text-xl font-bold text-teal-600">{formatarMoeda(dadosRelatorio.lucroLiquido)}</p>
+              <p className="text-sm text-gray-500 mb-1">Total Lucro</p>
+              <p className="text-xl font-bold text-gray-900">{formatarMoeda(dadosRelatorio.lucroLiquido)}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-600 mb-1">Margem Média</p>
-              <p className="text-xl font-bold text-purple-600">
+              <p className="text-sm text-gray-500 mb-1">Margem Média</p>
+              <p className="text-xl font-bold text-gray-900">
                 {((dadosRelatorio.lucroLiquido / dadosRelatorio.receita) * 100).toFixed(1)}%
               </p>
             </div>
@@ -339,25 +342,23 @@ const Relatoriofaturamento = () => {
 
       {/* Botões de Exportação */}
       <div className="flex gap-3">
-        <Button 
-          variant="outline" 
-          className="flex items-center gap-2"
+        <button 
           onClick={exportarPDF}
+          className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors text-sm font-medium"
         >
-          <Download size={18} />
+          <Download size={16} />
           Exportar PDF
-        </Button>
-        <Button 
-          variant="outline" 
-          className="flex items-center gap-2"
+        </button>
+        <button 
           onClick={exportarExcel}
+          className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors text-sm font-medium"
         >
-          <Download size={18} />
+          <Download size={16} />
           Exportar Excel
-        </Button>
+        </button>
       </div>
     </MainLayout>
   );
 };
 
-export default Relatoriofaturamento;
+export default RelatorioFaturamento;

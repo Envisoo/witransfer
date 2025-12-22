@@ -1,12 +1,13 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from '@/hooks/useForm';
 import { useNotification } from '@/hooks/useNotification';
 import Button from '@/components/common/Button';
 import Input from '@/components/common/Input';
 import Select from '@/components/common/Select';
-import { MotoristaFormData } from '@/types/motorista';
+import motoristasService from '@/services/motoristasService';
+import { MotoristaFormData, Motorista } from '@/types/motorista';
 import {
   validarEmail,
   validarTelefone,
@@ -14,35 +15,72 @@ import {
   validarDocumentoAngola,
   validarCartaConducao,
 } from '@/lib/validators';
+import { 
+  User, 
+  FileText, 
+  Briefcase, 
+  MessageSquare, 
+  Upload,
+  X,
+  CheckCircle
+} from 'lucide-react';
 
 interface FormularioCadastroMotoristaProps {
   motoristaId?: string;
   onSucesso?: () => void;
   editar?: boolean;
-  dadosIniciais?: MotoristaFormData;
+  dadosIniciais?: Partial<Motorista>;
 }
 
 const FormularioCadastroMotorista: React.FC<FormularioCadastroMotoristaProps> = ({
   motoristaId,
   onSucesso,
   editar = false,
-  dadosIniciais: dadosRecebidos,
+  dadosIniciais,
 }) => {
   const { sucesso, erro } = useNotification();
+  const [idiomaSelecionado, setIdiomaSelecionado] = useState('');
 
-  const dadosPadrao: MotoristaFormData = {
-    nome: '',
-    email: '',
-    telefone: '',
-    dataNascimento: '',
-    numeroDocumento: '',
-    cartaConducao: '',
-    dataInicio: '',
-    status: 'offline',
+  const formDataInicial: MotoristaFormData = {
+    // A) Dados Pessoais
+    nome: dadosIniciais?.nome || '',
+    nomeApelido: dadosIniciais?.nomeApelido || '',
+    dataNascimento: dadosIniciais?.dataNascimento || '',
+    sexo: dadosIniciais?.sexo || undefined,
+    nacionalidade: dadosIniciais?.nacionalidade || '',
+    nif: dadosIniciais?.nif || '',
+    numeroDocumento: dadosIniciais?.numeroDocumento || '',
+    endereco: dadosIniciais?.endereco || '',
+    cidade: dadosIniciais?.cidade || '',
+    provincia: dadosIniciais?.provincia || '',
+    telefone: dadosIniciais?.telefone || '',
+    telefoneAlternativo: dadosIniciais?.telefoneAlternativo || '',
+    email: dadosIniciais?.email || '',
+    
+    // B) Documentação
+    cartaConducao: dadosIniciais?.cartaConducao || '',
+    dataEmissaoCarta: dadosIniciais?.dataEmissaoCarta || '',
+    dataValidadeCarta: dadosIniciais?.dataValidadeCarta || '',
+    cartaProfissional: dadosIniciais?.cartaProfissional || false,
+    
+    // C) Informações Profissionais
+    experienciaAnos: dadosIniciais?.experienciaAnos || undefined,
+    idiomasFalados: dadosIniciais?.idiomasFalados || [],
+    disponibilidade: dadosIniciais?.disponibilidade || 'Ativo',
+    dataInicio: dadosIniciais?.dataInicio || '',
+    turno: dadosIniciais?.turno || '',
+    viaturaId: dadosIniciais?.viaturaId || '',
+    status: dadosIniciais?.status || 'offline',
+    
+    // G) Observações
+    notasInternas: dadosIniciais?.notasInternas || '',
+    comportamento: dadosIniciais?.comportamento || '',
+    recomendacoes: dadosIniciais?.recomendacoes || '',
+    restricoesMedicas: dadosIniciais?.restricoesMedicas || '',
   };
 
   const { valores, erros, enviando, mudar, definirErro, enviar } = useForm({
-    valorInicial: dadosRecebidos || dadosPadrao,
+    valorInicial: formDataInicial,
     onSubmit: async (dados) => {
       // Validações
       if (!dados.nome || dados.nome.length < 3) {
@@ -81,15 +119,12 @@ const FormularioCadastroMotorista: React.FC<FormularioCadastroMotoristaProps> = 
       }
 
       try {
-        // Simulação de chamada API
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
         if (editar && motoristaId) {
-          console.log('Atualizando motorista:', { id: motoristaId, ...dados });
-          sucesso('Motorista atualizado com sucesso (Simulação)');
+          await motoristasService.atualizar(motoristaId, dados);
+          sucesso('Motorista atualizado com sucesso');
         } else {
-          console.log('Criando motorista:', dados);
-          sucesso('Motorista criado com sucesso (Simulação)');
+          await motoristasService.criar(dados);
+          sucesso('Motorista criado com sucesso');
         }
         onSucesso?.();
       } catch (erroCapturado: any) {
@@ -98,35 +133,47 @@ const FormularioCadastroMotorista: React.FC<FormularioCadastroMotoristaProps> = 
     },
   });
 
-  return (
-    <form onSubmit={enviar} className="space-y-6">
-      {/* Personal Information Section */}
-      <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
-        <div className="flex items-center gap-2 mb-4">
-          <div className="bg-blue-100 p-2 rounded-lg">
-            <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
-          </div>
-          <h3 className="text-lg font-semibold text-gray-900">Informações Pessoais</h3>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Nome */}
-          <div className="md:col-span-2">
-            <Input
-              label="Nome Completo"
-              value={valores.nome}
-              onChange={(e) => mudar('nome', e.target.value)}
-              erro={erros.nome}
-              required
-              placeholder="João Silva"
-            />
-          </div>
+  const adicionarIdioma = () => {
+    if (idiomaSelecionado && !valores.idiomasFalados?.includes(idiomaSelecionado)) {
+      mudar('idiomasFalados', [...(valores.idiomasFalados || []), idiomaSelecionado]);
+      setIdiomaSelecionado('');
+    }
+  };
 
-          {/* Data de Nascimento */}
+  const removerIdioma = (idioma: string) => {
+    mudar('idiomasFalados', valores.idiomasFalados?.filter(i => i !== idioma) || []);
+  };
+
+  return (
+    <form onSubmit={enviar} className="space-y-8">
+      {/* A) DADOS PESSOAIS */}
+      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="bg-blue-600 p-2 rounded-lg">
+            <User size={20} className="text-white" />
+          </div>
+          <h3 className="text-xl font-bold text-gray-900">A) Dados Pessoais</h3>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
-            label="Data de Nascimento"
+            label="Nome Completo *"
+            value={valores.nome}
+            onChange={(e) => mudar('nome', e.target.value)}
+            erro={erros.nome}
+            required
+            placeholder="João Manuel da Silva"
+          />
+
+          <Input
+            label="Nome Curto / Apelido"
+            value={valores.nomeApelido || ''}
+            onChange={(e) => mudar('nomeApelido', e.target.value)}
+            placeholder="João"
+          />
+
+          <Input
+            label="Data de Nascimento *"
             type="date"
             value={valores.dataNascimento}
             onChange={(e) => mudar('dataNascimento', e.target.value)}
@@ -134,130 +181,383 @@ const FormularioCadastroMotorista: React.FC<FormularioCadastroMotoristaProps> = 
             required
           />
 
-          {/* Status */}
           <Select
-            label="Status"
-            value={valores.status}
-            onChange={(e) => mudar('status', e.target.value)}
+            label="Sexo"
+            value={valores.sexo || ''}
+            onChange={(e) => mudar('sexo', e.target.value)}
             opcoes={[
-              { value: 'online', label: 'Online' },
-              { value: 'offline', label: 'Offline' },
-              { value: 'suspenso', label: 'Suspenso' },
+              { value: '', label: 'Selecione' },
+              { value: 'Masculino', label: 'Masculino' },
+              { value: 'Feminino', label: 'Feminino' },
+              { value: 'Outro', label: 'Outro' },
             ]}
           />
-        </div>
-      </div>
 
-      {/* Contact Information Section */}
-      <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
-        <div className="flex items-center gap-2 mb-4">
-          <div className="bg-green-100 p-2 rounded-lg">
-            <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
-          </div>
-          <h3 className="text-lg font-semibold text-gray-900">Informações de Contato</h3>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* E-mail */}
           <Input
-            label="E-mail"
-            type="email"
-            value={valores.email}
-            onChange={(e) => mudar('email', e.target.value)}
-            erro={erros.email}
-            required
-            placeholder="joao@email.com"
+            label="Nacionalidade"
+            value={valores.nacionalidade || ''}
+            onChange={(e) => mudar('nacionalidade', e.target.value)}
+            placeholder="Angolana"
           />
 
-          {/* Telefone */}
           <Input
-            label="Telefone"
+            label="NIF"
+            value={valores.nif || ''}
+            onChange={(e) => mudar('nif', e.target.value)}
+            placeholder="000000000"
+          />
+
+          <Input
+            label="Número do Documento (BI) *"
+            value={valores.numeroDocumento}
+            onChange={(e) => mudar('numeroDocumento', e.target.value)}
+            erro={erros.numeroDocumento}
+            required
+            placeholder="000000000LA000"
+          />
+
+          <Input
+            label="Endereço"
+            value={valores.endereco || ''}
+            onChange={(e) => mudar('endereco', e.target.value)}
+            placeholder="Rua, Bairro"
+          />
+
+          <Input
+            label="Cidade"
+            value={valores.cidade || ''}
+            onChange={(e) => mudar('cidade', e.target.value)}
+            placeholder="Luanda"
+          />
+
+          <Input
+            label="Província"
+            value={valores.provincia || ''}
+            onChange={(e) => mudar('provincia', e.target.value)}
+            placeholder="Luanda"
+          />
+
+          <Input
+            label="Telefone Principal *"
             value={valores.telefone}
             onChange={(e) => mudar('telefone', e.target.value)}
             erro={erros.telefone}
             required
             placeholder="923456789"
-            ajuda="Apenas números, 9 dígitos"
+            ajuda="9 dígitos"
           />
+
+          <Input
+            label="Telefone Alternativo"
+            value={valores.telefoneAlternativo || ''}
+            onChange={(e) => mudar('telefoneAlternativo', e.target.value)}
+            placeholder="923456789"
+          />
+
+          <Input
+            label="Email *"
+            type="email"
+            value={valores.email}
+            onChange={(e) => mudar('email', e.target.value)}
+            erro={erros.email}
+            required
+            placeholder="motorista@exemplo.com"
+          />
+        </div>
+
+        {/* Upload Foto */}
+        <div className="mt-4">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Foto do Motorista
+          </label>
+          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors cursor-pointer">
+            <Upload className="mx-auto text-gray-400 mb-2" size={32} />
+            <p className="text-sm text-gray-600">
+              Clique para fazer upload ou arraste a foto
+            </p>
+            <input type="file" className="hidden" accept="image/*" />
+          </div>
         </div>
       </div>
 
-      {/* Documentation Section */}
-      <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
-        <div className="flex items-center gap-2 mb-4">
-          <div className="bg-orange-100 p-2 rounded-lg">
-            <svg className="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
+      {/* B) DOCUMENTAÇÃO DO MOTORISTA */}
+      <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl p-6 border border-orange-100">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="bg-orange-600 p-2 rounded-lg">
+            <FileText size={20} className="text-white" />
           </div>
-          <h3 className="text-lg font-semibold text-gray-900">Documentação</h3>
+          <h3 className="text-xl font-bold text-gray-900">B) Documentação do Motorista</h3>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Documento */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
-            label="Número do Documento"
-            value={valores.numeroDocumento}
-            onChange={(e) => mudar('numeroDocumento', e.target.value)}
-            erro={erros.numeroDocumento}
-            required
-            placeholder="BI ou Passaporte"
-          />
-
-          {/* Carta de Condução */}
-          <Input
-            label="Número da Carta de Condução"
+            label="Número da Carta de Condução *"
             value={valores.cartaConducao}
             onChange={(e) => mudar('cartaConducao', e.target.value)}
             erro={erros.cartaConducao}
             required
-            placeholder="Número da carta"
+            placeholder="000000000"
           />
+
+          <Input
+            label="Data de Emissão da Carta"
+            type="date"
+            value={valores.dataEmissaoCarta || ''}
+            onChange={(e) => mudar('dataEmissaoCarta', e.target.value)}
+          />
+
+          <Input
+            label="Data de Validade da Carta"
+            type="date"
+            value={valores.dataValidadeCarta || ''}
+            onChange={(e) => mudar('dataValidadeCarta', e.target.value)}
+          />
+
+          <div className="flex items-center gap-3 mt-6">
+            <input
+              type="checkbox"
+              id="cartaProfissional"
+              checked={valores.cartaProfissional || false}
+              onChange={(e) => mudar('cartaProfissional', e.target.checked)}
+              className="w-5 h-5 text-orange-600 rounded focus:ring-orange-500"
+            />
+            <label htmlFor="cartaProfissional" className="text-sm font-medium text-gray-700">
+              Possui Carta Profissional
+            </label>
+          </div>
+        </div>
+
+        {/* Upload de Documentos */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Foto do BI
+            </label>
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-orange-400 transition-colors cursor-pointer">
+              <Upload className="mx-auto text-gray-400 mb-1" size={24} />
+              <p className="text-xs text-gray-600">Upload BI</p>
+              <input type="file" className="hidden" accept="image/*" />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Foto da Carta
+            </label>
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-orange-400 transition-colors cursor-pointer">
+              <Upload className="mx-auto text-gray-400 mb-1" size={24} />
+              <p className="text-xs text-gray-600">Upload Carta</p>
+              <input type="file" className="hidden" accept="image/*" />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Registo Criminal (opcional)
+            </label>
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-orange-400 transition-colors cursor-pointer">
+              <Upload className="mx-auto text-gray-400 mb-1" size={24} />
+              <p className="text-xs text-gray-600">Upload Documento</p>
+              <input type="file" className="hidden" accept=".pdf,.jpg,.jpeg,.png" />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Atestado Médico (opcional)
+            </label>
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-orange-400 transition-colors cursor-pointer">
+              <Upload className="mx-auto text-gray-400 mb-1" size={24} />
+              <p className="text-xs text-gray-600">Upload Atestado</p>
+              <input type="file" className="hidden" accept=".pdf,.jpg,.jpeg,.png" />
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Professional Information Section */}
-      <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
-        <div className="flex items-center gap-2 mb-4">
-          <div className="bg-purple-100 p-2 rounded-lg">
-            <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
+      {/* C) INFORMAÇÕES PROFISSIONAIS */}
+      <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 border border-green-100">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="bg-green-600 p-2 rounded-lg">
+            <Briefcase size={20} className="text-white" />
           </div>
-          <h3 className="text-lg font-semibold text-gray-900">Informações Profissionais</h3>
+          <h3 className="text-xl font-bold text-gray-900">C) Informações Profissionais</h3>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Data de Início */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
-            label="Data de Início"
+            label="Experiência (anos de condução)"
+            type="number"
+            value={valores.experienciaAnos?.toString() || ''}
+            onChange={(e) => mudar('experienciaAnos', parseInt(e.target.value) || 0)}
+            placeholder="5"
+            min="0"
+          />
+
+          <Input
+            label="Data de Início *"
             type="date"
             value={valores.dataInicio}
             onChange={(e) => mudar('dataInicio', e.target.value)}
             erro={erros.dataInicio}
             required
           />
+
+          <Select
+            label="Disponibilidade *"
+            value={valores.disponibilidade}
+            onChange={(e) => mudar('disponibilidade', e.target.value)}
+            opcoes={[
+              { value: 'Ativo', label: 'Ativo' },
+              { value: 'Inativo', label: 'Inativo' },
+              { value: 'Férias', label: 'Férias' },
+            ]}
+          />
+
+          <Select
+            label="Status *"
+            value={valores.status}
+            onChange={(e) => mudar('status', e.target.value)}
+            opcoes={[
+              { value: 'online', label: 'Online' },
+              { value: 'offline', label: 'Offline' },
+              { value: 'disponivel', label: 'Disponível' },
+              { value: 'ocupado', label: 'Ocupado' },
+              { value: 'suspenso', label: 'Suspenso' },
+            ]}
+          />
+
+          <Input
+            label="Turno"
+            value={valores.turno || ''}
+            onChange={(e) => mudar('turno', e.target.value)}
+            placeholder="Manhã, Tarde, Noite"
+          />
+        </div>
+
+        {/* Idiomas Falados */}
+        <div className="mt-4">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Idiomas Falados
+          </label>
+          <div className="flex gap-2 mb-3">
+            <select
+              value={idiomaSelecionado}
+              onChange={(e) => setIdiomaSelecionado(e.target.value)}
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+            >
+              <option value="">Selecione um idioma</option>
+              <option value="Português">Português</option>
+              <option value="Inglês">Inglês</option>
+              <option value="Francês">Francês</option>
+              <option value="Espanhol">Espanhol</option>
+              <option value="Kimbundu">Kimbundu</option>
+              <option value="Umbundu">Umbundu</option>
+              <option value="Kikongo">Kikongo</option>
+            </select>
+            <Button
+              type="button"
+              onClick={adicionarIdioma}
+              variant="outline"
+              className="px-6"
+            >
+              Adicionar
+            </Button>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {valores.idiomasFalados?.map((idioma) => (
+              <div
+                key={idioma}
+                className="flex items-center gap-2 bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm"
+              >
+                <span>{idioma}</span>
+                <button
+                  type="button"
+                  onClick={() => removerIdioma(idioma)}
+                  className="hover:text-green-900"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Action Buttons */}
-      <div className="flex items-center justify-between pt-6 border-t border-gray-200">
-        <Button 
-          type="button" 
-          variant="secondary"
-          onClick={() => window.history.back()}
-          className="px-6">
-          Cancelar
-        </Button>
-        
-        <Button 
-          type="submit" 
-          variant="primary" 
+      {/* G) OBSERVAÇÕES */}
+      <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6 border border-purple-100">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="bg-purple-600 p-2 rounded-lg">
+            <MessageSquare size={20} className="text-white" />
+          </div>
+          <h3 className="text-xl font-bold text-gray-900">G) Observações</h3>
+        </div>
+
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Notas Internas
+            </label>
+            <textarea
+              value={valores.notasInternas || ''}
+              onChange={(e) => mudar('notasInternas', e.target.value)}
+              rows={3}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+              placeholder="Informações internas sobre o motorista..."
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Comportamento
+            </label>
+            <textarea
+              value={valores.comportamento || ''}
+              onChange={(e) => mudar('comportamento', e.target.value)}
+              rows={3}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+              placeholder="Observações sobre o comportamento..."
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Recomendações
+            </label>
+            <textarea
+              value={valores.recomendacoes || ''}
+              onChange={(e) => mudar('recomendacoes', e.target.value)}
+              rows={3}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+              placeholder="Recomendações e sugestões..."
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Restrições Médicas
+            </label>
+            <textarea
+              value={valores.restricoesMedicas || ''}
+              onChange={(e) => mudar('restricoesMedicas', e.target.value)}
+              rows={3}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+              placeholder="Restrições médicas, se houver..."
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Botões de Ação */}
+      <div className="flex gap-4 pt-4">
+        <Button
+          type="submit"
+          variant="primary"
           isLoading={enviando}
-          className="px-8">
-          {editar ? 'Atualizar Motorista' : 'Criar Motorista'}
+          className="flex items-center justify-center gap-2 flex-1"
+        >
+          <CheckCircle size={18} />
+          {editar ? 'Atualizar' : 'Criar'} Motorista
         </Button>
       </div>
     </form>

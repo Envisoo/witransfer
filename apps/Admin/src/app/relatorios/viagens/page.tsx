@@ -1,10 +1,11 @@
+/** @format */
+
 'use client';
 
 import React, { useState } from 'react';
-import { ArrowLeft, Download, Car, MapPin, Clock, Star, TrendingUp, Users } from 'lucide-react';
+import { ArrowLeft, Download, Calendar, MapPin, Clock, Star, TrendingUp, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import MainLayout from '@/components/layout/MainLayout';
-import Button from '@/components/common/Button';
 import {
   BarChart,
   Bar,
@@ -12,10 +13,9 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
-  LineChart,
-  Line,
+  Area,
+  AreaChart,
 } from 'recharts';
 
 // Dados estáticos
@@ -32,8 +32,6 @@ const dadosRelatorio = {
     { motoristaNome: 'Sofia Martins', numeroViagens: 118, avaliacaoMedia: 4.9, distanciaTotal: 1780 },
     { motoristaNome: 'Rui Pereira', numeroViagens: 115, avaliacaoMedia: 4.7, distanciaTotal: 1720 },
     { motoristaNome: 'Isabel Rocha', numeroViagens: 109, avaliacaoMedia: 4.8, distanciaTotal: 1650 },
-    { motoristaNome: 'Lucas Ferreira', numeroViagens: 102, avaliacaoMedia: 4.6, distanciaTotal: 1540 },
-    { motoristaNome: 'Beatriz Lima', numeroViagens: 98, avaliacaoMedia: 4.9, distanciaTotal: 1480 },
   ],
   porDia: [
     { dia: '27/11', viagens: 42, distancia: 620 },
@@ -50,12 +48,6 @@ const RelatorioViagens = () => {
   const [dataInicio, setDataInicio] = useState('2024-11-01');
   const [dataFim, setDataFim] = useState('2024-12-03');
 
-  const motoristasData = dadosRelatorio.porMotorista.slice(0, 5).map((m) => ({
-    name: m.motoristaNome,
-    viagens: m.numeroViagens,
-    avaliacao: m.avaliacaoMedia,
-  }));
-
   const exportarPDF = () => {
     alert('Exportação para PDF iniciada! (Funcionalidade de demonstração)');
   };
@@ -66,188 +58,221 @@ const RelatorioViagens = () => {
 
   return (
     <MainLayout titulo="Relatório de Viagens">
+      {/* Breadcrumb */}
       <div className="mb-6">
         <Link
           href="/relatorios"
-          className="flex items-center gap-2 text-teal-600 hover:text-teal-700 font-medium transition-colors"
+          className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium transition-colors text-sm"
         >
-          <ArrowLeft size={20} />
+          <ArrowLeft size={16} />
           Voltar para Relatórios
         </Link>
       </div>
 
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Relatório de Viagens</h1>
-        <p className="text-gray-600">Análise completa de viagens realizadas por motorista e período</p>
+        <h1 className="text-2xl font-bold text-gray-900 mb-1">Relatório de Viagens</h1>
+        <p className="text-sm text-gray-500">Análise completa de viagens realizadas por motorista e período</p>
       </div>
 
       {/* Filtros */}
-      <div className="bg-white rounded-xl shadow-md p-6 mb-8">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">Filtros de Período</h3>
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
+        <h3 className="text-sm font-semibold text-gray-700 mb-4 uppercase tracking-wide">Período de Análise</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="form-label">Data Inicial</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Data Inicial</label>
             <input
               type="date"
               value={dataInicio}
               onChange={(e) => setDataInicio(e.target.value)}
-              className="form-input"
+              className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
             />
           </div>
           <div>
-            <label className="form-label">Data Final</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Data Final</label>
             <input
               type="date"
               value={dataFim}
               onChange={(e) => setDataFim(e.target.value)}
-              className="form-input"
+              className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
             />
           </div>
-          <div className="flex items-end gap-2">
-            <Button variant="primary" fullWidth>
+          <div className="flex items-end">
+            <button className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
               Atualizar Relatório
-            </Button>
+            </button>
           </div>
         </div>
       </div>
 
       {/* Cards de Resumo */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 text-white shadow-lg">
-          <div className="flex items-center justify-between mb-4">
-            <Car size={32} className="opacity-80" />
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+          <div className="flex justify-between items-start mb-4">
+            <div className="p-3 bg-blue-50 rounded-xl">
+              <Calendar className="text-blue-600" size={20} />
+            </div>
           </div>
-          <p className="text-sm font-medium opacity-90 mb-1">Total de Viagens</p>
-          <p className="text-4xl font-bold">{dadosRelatorio.total.toLocaleString()}</p>
-          <p className="text-xs opacity-75 mt-2">No período</p>
+          <h3 className="text-gray-500 text-sm font-medium mb-1">Total de Viagens</h3>
+          <p className="text-3xl font-bold text-gray-900">{dadosRelatorio.total.toLocaleString()}</p>
+          <p className="text-xs text-gray-400 mt-2">No período selecionado</p>
         </div>
 
-        <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-6 text-white shadow-lg">
-          <div className="flex items-center justify-between mb-4">
-            <MapPin size={32} className="opacity-80" />
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+          <div className="flex justify-between items-start mb-4">
+            <div className="p-3 bg-indigo-50 rounded-xl">
+              <MapPin className="text-indigo-600" size={20} />
+            </div>
           </div>
-          <p className="text-sm font-medium opacity-90 mb-1">Distância Total</p>
-          <p className="text-4xl font-bold">{dadosRelatorio.distanciaTotal.toLocaleString()}</p>
-          <p className="text-xs opacity-75 mt-2">Quilômetros percorridos</p>
+          <h3 className="text-gray-500 text-sm font-medium mb-1">Distância Total</h3>
+          <p className="text-3xl font-bold text-gray-900">{dadosRelatorio.distanciaTotal.toLocaleString()}</p>
+          <p className="text-xs text-gray-400 mt-2">Quilômetros percorridos</p>
         </div>
 
-        <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-6 text-white shadow-lg">
-          <div className="flex items-center justify-between mb-4">
-            <Clock size={32} className="opacity-80" />
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+          <div className="flex justify-between items-start mb-4">
+            <div className="p-3 bg-purple-50 rounded-xl">
+              <Clock className="text-purple-600" size={20} />
+            </div>
           </div>
-          <p className="text-sm font-medium opacity-90 mb-1">Tempo Médio</p>
-          <p className="text-4xl font-bold">{dadosRelatorio.tempoMedio}</p>
-          <p className="text-xs opacity-75 mt-2">Minutos por viagem</p>
+          <h3 className="text-gray-500 text-sm font-medium mb-1">Tempo Médio</h3>
+          <p className="text-3xl font-bold text-gray-900">{dadosRelatorio.tempoMedio}</p>
+          <p className="text-xs text-gray-400 mt-2">Minutos por viagem</p>
         </div>
 
-        <div className="bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl p-6 text-white shadow-lg">
-          <div className="flex items-center justify-between mb-4">
-            <Users size={32} className="opacity-80" />
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+          <div className="flex justify-between items-start mb-4">
+            <div className="p-3 bg-teal-50 rounded-xl">
+              <TrendingUp className="text-teal-600" size={20} />
+            </div>
           </div>
-          <p className="text-sm font-medium opacity-90 mb-1">Motoristas Ativos</p>
-          <p className="text-4xl font-bold">{dadosRelatorio.porMotorista.length}</p>
-          <p className="text-xs opacity-75 mt-2">Neste período</p>
+          <h3 className="text-gray-500 text-sm font-medium mb-1">Motoristas Ativos</h3>
+          <p className="text-3xl font-bold text-gray-900">{dadosRelatorio.porMotorista.length}</p>
+          <p className="text-xs text-gray-400 mt-2">Neste período</p>
         </div>
       </div>
 
       {/* Gráficos */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        {/* Top 5 Motoristas */}
-        <div className="bg-white rounded-xl shadow-md p-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-6 flex items-center gap-2">
-            <TrendingUp className="text-teal-600" size={20} />
-            Top 5 Motoristas por Viagens
-          </h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={motoristasData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-              <XAxis dataKey="name" stroke="#6b7280" angle={-15} textAnchor="end" height={80} />
-              <YAxis stroke="#6b7280" />
-              <Tooltip 
-                contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb' }}
-              />
-              <Legend />
-              <Bar dataKey="viagens" fill="#14b8a6" name="Viagens" radius={[8, 8, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
+        {/* Evolução Diária */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-lg font-bold text-gray-900">Evolução Diária</h3>
+            <button className="text-sm text-blue-600 font-medium hover:underline">Ver Detalhes</button>
+          </div>
+          <div className="h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={dadosRelatorio.porDia}>
+                <defs>
+                  <linearGradient id="colorViagens" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.1}/>
+                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                <XAxis 
+                  dataKey="dia" 
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: '#9ca3af', fontSize: 12 }}
+                  dy={10}
+                />
+                <YAxis 
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: '#9ca3af', fontSize: 12 }}
+                />
+                <Tooltip 
+                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                />
+                <Area 
+                  type="monotone" 
+                  dataKey="viagens" 
+                  stroke="#3b82f6" 
+                  strokeWidth={3}
+                  fillOpacity={1}
+                  fill="url(#colorViagens)"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
         </div>
 
-        {/* Evolução Diária */}
-        <div className="bg-white rounded-xl shadow-md p-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-6 flex items-center gap-2">
-            <Car className="text-teal-600" size={20} />
-            Evolução Diária de Viagens
-          </h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={dadosRelatorio.porDia}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-              <XAxis dataKey="dia" stroke="#6b7280" />
-              <YAxis stroke="#6b7280" />
-              <Tooltip 
-                contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb' }}
-              />
-              <Legend />
-              <Line 
-                type="monotone" 
-                dataKey="viagens" 
-                stroke="#3b82f6" 
-                strokeWidth={3}
-                name="Viagens"
-                dot={{ fill: '#3b82f6', r: 5 }}
-                activeDot={{ r: 7 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
+        {/* Top 5 Motoristas */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-lg font-bold text-gray-900">Top 5 Motoristas</h3>
+            <button className="text-sm text-blue-600 font-medium hover:underline">Ver Todos</button>
+          </div>
+          <div className="h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={dadosRelatorio.porMotorista.slice(0, 5)}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                <XAxis 
+                  dataKey="motoristaNome" 
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: '#9ca3af', fontSize: 11 }}
+                  angle={-15}
+                  textAnchor="end"
+                  height={80}
+                />
+                <YAxis 
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: '#9ca3af', fontSize: 12 }}
+                />
+                <Tooltip 
+                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                />
+                <Bar dataKey="numeroViagens" fill="#3b82f6" radius={[8, 8, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       </div>
 
       {/* Tabela de Motoristas */}
-      <div className="bg-white rounded-xl shadow-md overflow-hidden mb-8">
-        <div className="p-6 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-            <Users className="text-teal-600" size={20} />
-            Desempenho Detalhado por Motorista
-          </h3>
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8">
+        <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+          <h3 className="text-lg font-bold text-gray-900">Desempenho por Motorista</h3>
+          <Link href="/motoristas" className="text-sm text-blue-600 font-medium hover:underline flex items-center gap-1">
+            Ver Motoristas
+            <ChevronRight size={16} />
+          </Link>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="bg-gray-50/50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">Posição</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">Motorista</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">Nº Viagens</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">Distância (km)</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">Avaliação</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">#</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Motorista</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Viagens</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Distância</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Avaliação</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-100">
               {dadosRelatorio.porMotorista.map((motorista, idx) => (
-                <tr key={idx} className="hover:bg-gray-50 transition-colors">
+                <tr key={idx} className="hover:bg-gray-50/50 transition-colors">
                   <td className="px-6 py-4">
-                    <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold ${
-                      idx === 0 ? 'bg-yellow-100 text-yellow-700' :
-                      idx === 1 ? 'bg-gray-200 text-gray-700' :
-                      idx === 2 ? 'bg-orange-100 text-orange-700' :
-                      'bg-gray-100 text-gray-600'
-                    }`}>
-                      {idx + 1}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center text-teal-700 font-semibold">
-                        {motorista.motoristaNome.charAt(0)}
-                      </div>
-                      <span className="text-sm font-medium text-gray-900">{motorista.motoristaNome}</span>
+                    <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center">
+                      <span className="font-bold text-blue-600 text-sm">{idx + 1}</span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-sm font-semibold text-gray-900">{motorista.numeroViagens}</td>
-                  <td className="px-6 py-4 text-sm text-gray-600">{motorista.distanciaTotal.toLocaleString()} km</td>
+                  <td className="px-6 py-4">
+                    <span className="font-medium text-gray-900">{motorista.motoristaNome}</span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="text-gray-600">{motorista.numeroViagens}</span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="text-gray-600">{motorista.distanciaTotal.toLocaleString()} km</span>
+                  </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-1">
-                      <Star className="text-amber-500 fill-amber-500" size={16} />
-                      <span className="text-sm font-semibold text-gray-900">{motorista.avaliacaoMedia.toFixed(1)}</span>
+                      <Star className="text-amber-400 fill-amber-400" size={14} />
+                      <span className="font-semibold text-gray-900 text-sm">{motorista.avaliacaoMedia.toFixed(1)}</span>
                     </div>
                   </td>
                 </tr>
@@ -259,22 +284,20 @@ const RelatorioViagens = () => {
 
       {/* Botões de Exportação */}
       <div className="flex gap-3">
-        <Button 
-          variant="outline" 
-          className="flex items-center gap-2"
+        <button 
           onClick={exportarPDF}
+          className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors text-sm font-medium"
         >
-          <Download size={18} />
+          <Download size={16} />
           Exportar PDF
-        </Button>
-        <Button 
-          variant="outline" 
-          className="flex items-center gap-2"
+        </button>
+        <button 
           onClick={exportarExcel}
+          className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors text-sm font-medium"
         >
-          <Download size={18} />
+          <Download size={16} />
           Exportar Excel
-        </Button>
+        </button>
       </div>
     </MainLayout>
   );

@@ -3,7 +3,24 @@
 "use client";
 
 import React, { useState } from "react";
-import { Plus, Edit, Trash2, Search, Check, Eye } from "lucide-react";
+import { 
+  Plus, 
+  Edit, 
+  Trash2, 
+  Check, 
+  Eye, 
+  Car,
+  TrendingUp,
+  AlertTriangle,
+  Settings,
+  Filter,
+  LayoutGrid,
+  List,
+  Gauge,
+  Users,
+  Fuel,
+  X
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import MainLayout from "@/components/layout/MainLayout";
@@ -11,7 +28,7 @@ import Button from "@/components/common/Button";
 import Input from "@/components/common/Input";
 import Badge from "@/components/common/Badge";
 import Paginacao from "@/components/common/Paginacao";
-import { StatusViatura } from "@/types/viatura";
+import { StatusViatura, Viatura } from "@/types/viatura";
 import { mockViaturas } from "@/data/mockViaturas";
 
 const Viaturas = () => {
@@ -19,8 +36,19 @@ const Viaturas = () => {
   const [pagina, setPagina] = useState(1);
   const [busca, setBusca] = useState("");
   const [statusFiltro, setStatusFiltro] = useState<StatusViatura | "">("");
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('list'); // Começa em LISTA
+  const [minKm, setMinKm] = useState<number>(0);
+  const [sortKey, setSortKey] = useState<keyof Viatura>("modelo");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+  const [pageSize, setPageSize] = useState<number>(10);
+  const [cols, setCols] = useState({
+    motorista: true,
+    lugares: true,
+    arCondicionado: true,
+    status: true,
+  });
 
-  // Filter viaturas based on search and status
+  // Filter viaturas
   const viaturasFiltradas = mockViaturas.filter((viatura) => {
     const matchesSearch =
       viatura.matricula.toLowerCase().includes(busca.toLowerCase()) ||
@@ -28,21 +56,46 @@ const Viaturas = () => {
       viatura.motoristanome?.toLowerCase().includes(busca.toLowerCase());
 
     const matchesStatus = statusFiltro ? viatura.status === statusFiltro : true;
+    const matchesKm = viatura.kilometragem >= minKm;
 
-    return matchesSearch && matchesStatus;
+    return matchesSearch && matchesStatus && matchesKm;
   });
 
+  // Sort
+  const viaturasOrdenadas = React.useMemo(() => {
+    const arr = [...viaturasFiltradas];
+    arr.sort((a, b) => {
+      const av: any = a[sortKey];
+      const bv: any = b[sortKey];
+      let comp = 0;
+      if (typeof av === "number" && typeof bv === "number") {
+        comp = av - bv;
+      } else {
+        comp = String(av ?? "").localeCompare(String(bv ?? ""), "pt");
+      }
+      return sortDir === "asc" ? comp : -comp;
+    });
+    return arr;
+  }, [viaturasFiltradas, sortKey, sortDir]);
+
+  // Statistics
+  const stats = {
+    total: mockViaturas.length,
+    ativas: mockViaturas.filter(v => v.status === 'ativa').length,
+    manutencao: mockViaturas.filter(v => v.status === 'manutencao').length,
+    inativas: mockViaturas.filter(v => v.status === 'inativa').length,
+  };
+
   // Pagination
-  const itensPorPagina = 5;
-  const totalPaginas = Math.ceil(viaturasFiltradas.length / itensPorPagina);
-  const dadosPagina = viaturasFiltradas.slice(
+  const itensPorPagina = pageSize;
+  const totalPaginas = Math.ceil(viaturasOrdenadas.length / itensPorPagina);
+  const dadosPagina = viaturasOrdenadas.slice(
     (pagina - 1) * itensPorPagina,
     pagina * itensPorPagina
   );
 
   const handleDelete = (id: string) => {
     if (window.confirm("Tem certeza que deseja excluir esta viatura?")) {
-      // In a real app, you would delete from the API here
       console.log("Deleting viatura with id:", id);
     }
   };
@@ -59,161 +112,512 @@ const Viaturas = () => {
 
   return (
     <MainLayout titulo="Gestão de Viaturas">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-6">
-        <Button
-          onClick={() => router.push('/viaturas/novo')}
-          className="flex items-center gap-2">
-          <Plus size={20} />
-          Nova Viatura
-        </Button>
-      </div>
-
-      {/* Filtros */}
-      <div className="bg-white p-4 mb-6 rounded-lg shadow-sm border border-gray-100 grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="relative">
-          <Search
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-            size={18}
-          />
-          <Input
-            type="text"
-            placeholder="Buscar viatura..."
-            className="pl-10 pr-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-500 w-full"
-            value={busca}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              setBusca(e.target.value);
-              setPagina(1);
-            }}
-          />
+      {/* Statistics Cards - COR ÚNICA AZUL SUAVE */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 text-white shadow-lg hover:shadow-xl transition-shadow">
+          <div className="flex items-center justify-between mb-4">
+            <div className="bg-white/20 backdrop-blur-sm p-3 rounded-lg">
+              <Car size={24} />
+            </div>
+            <div className="text-right">
+              <p className="text-3xl font-bold">{stats.total}</p>
+              <p className="text-blue-100 text-sm">Viaturas</p>
+            </div>
+          </div>
+          <p className="text-blue-100">Total de Frota</p>
         </div>
 
-        <select
-          value={statusFiltro}
-          onChange={(e) => {
-            setStatusFiltro(e.target.value as StatusViatura | "");
-            setPagina(1);
-          }}
-          className="px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-teal-500">
-          <option value="">Todas</option>
-          <option value="ativa">Ativa</option>
-          <option value="inativa">Inativa</option>
-          <option value="manutencao">Manutenção</option>
-          <option value="inspecao">Inspeção</option>
-        </select>
-      </div>
-
-      {/* Tabela de Viaturas */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full whitespace-nowrap">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Matrícula
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Modelo/Marca
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Motorista
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Lugares
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Ar-condicionado
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Ações
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {dadosPagina.map((viatura) => (
-                <tr key={viatura.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 text-sm font-medium text-gray-900">
-                    {viatura.matricula}
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="text-sm font-medium text-gray-900">
-                      {viatura.modelo}
-                    </div>
-                    <div className="text-sm text-gray-500">
-                      {viatura.marca} - {viatura.cor}
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 text-sm text-gray-600">
-                    {viatura.motoristanome || "-"}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-gray-600">
-                    {viatura.lugares} lugares
-                  </td>
-                  <td className="px-4 py-3 text-sm text-gray-600">
-                    {viatura.arCondicionado ? (
-                      <span className="inline-flex items-center text-green-600">
-                        <Check className="h-4 w-4 mr-1" /> Sim
-                      </span>
-                    ) : (
-                      <span className="text-gray-500">Não</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
-                    <Badge variant={getBadgeVariant(viatura.status) as any}>
-                      {viatura.status.charAt(0).toUpperCase() + viatura.status.slice(1)}
-                    </Badge>
-                  </td>
-                  <td className="px-4 py-3 text-sm text-center">
-                    <div className="flex items-center justify-center gap-2">
-                      <Link
-                        href={`/viaturas/${viatura.id}`}
-                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
-                        title="Ver detalhes">
-                        <Eye size={18} />
-                      </Link>
-                      <button
-                        onClick={() => router.push(`/viaturas/${viatura.id}`)}
-                        className="p-2 text-yellow-600 hover:bg-yellow-50 rounded-full transition-colors"
-                        title="Editar">
-                        <Edit size={18} />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(viatura.id)}
-                        className="p-2 text-red-600 hover:bg-red-50 rounded-full transition-colors"
-                        title="Excluir">
-                        <Trash2 size={18} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-
-              {dadosPagina.length === 0 && (
-                <tr>
-                  <td
-                    colSpan={7}
-                    className="px-4 py-6 text-center text-sm text-gray-500">
-                    Nenhuma viatura encontrada com os filtros atuais.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 text-white shadow-lg hover:shadow-xl transition-shadow">
+          <div className="flex items-center justify-between mb-4">
+            <div className="bg-white/20 backdrop-blur-sm p-3 rounded-lg">
+              <TrendingUp size={24} />
+            </div>
+            <div className="text-right">
+              <p className="text-3xl font-bold">{stats.ativas}</p>
+              <p className="text-blue-100 text-sm">Operacionais</p>
+            </div>
+          </div>
+          <p className="text-blue-100">Viaturas Ativas</p>
         </div>
 
-        {viaturasFiltradas.length > 0 && (
-          <div className="px-4 py-3 border-t border-gray-200">
-            <Paginacao
-              paginaAtual={pagina}
-              totalPaginas={totalPaginas}
-              onMudarPagina={setPagina}
+        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 text-white shadow-lg hover:shadow-xl transition-shadow">
+          <div className="flex items-center justify-between mb-4">
+            <div className="bg-white/20 backdrop-blur-sm p-3 rounded-lg">
+              <Settings size={24} />
+            </div>
+            <div className="text-right">
+              <p className="text-3xl font-bold">{stats.manutencao}</p>
+              <p className="text-blue-100 text-sm">Em Serviço</p>
+            </div>
+          </div>
+          <p className="text-blue-100">Manutenção</p>
+        </div>
+
+        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 text-white shadow-lg hover:shadow-xl transition-shadow">
+          <div className="flex items-center justify-between mb-4">
+            <div className="bg-white/20 backdrop-blur-sm p-3 rounded-lg">
+              <AlertTriangle size={24} />
+            </div>
+            <div className="text-right">
+              <p className="text-3xl font-bold">{stats.inativas}</p>
+              <p className="text-blue-100 text-sm">Paradas</p>
+            </div>
+          </div>
+          <p className="text-blue-100">Viaturas Inativas</p>
+        </div>
+      </div>
+
+      {/* Header & Filters */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+          <div>
+            <h2 className="text-xl font-bold text-gray-900">Frota de Veículos</h2>
+            <p className="text-sm text-gray-500 mt-1">Gerencie todos os veículos da sua frota</p>
+          </div>
+          <Button
+            onClick={() => router.push('/viaturas/novo')}
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white border-0">
+            <Plus size={20} />
+            Nova Viatura
+          </Button>
+        </div>
+
+        {/* Filters Row 1 */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-4">
+          {/* Search */}
+          <div className="md:col-span-4 relative">
+            <Input
+              type="text"
+              placeholder="Buscar por nome, email ou telefone..."
+              className="pl-4 pr-10 py-2.5 rounded-lg border-gray-200 focus:ring-2 focus:ring-blue-500 w-full text-sm"
+              value={busca}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                setBusca(e.target.value);
+                setPagina(1);
+              }}
+            />
+            {busca && (
+              <button
+                onClick={() => setBusca("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              >
+                <X size={16} />
+              </button>
+            )}
+          </div>
+
+          {/* Status Filter */}
+          <div className="md:col-span-2">
+            <select
+              value={statusFiltro}
+              onChange={(e) => {
+                setStatusFiltro(e.target.value as StatusViatura | "");
+                setPagina(1);
+              }}
+              className="px-3 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full appearance-none bg-white cursor-pointer h-[42px]">
+              <option value="">Todos Status</option>
+              <option value="ativa">Ativa</option>
+              <option value="inativa">Inativa</option>
+              <option value="manutencao">Manutenção</option>
+              <option value="inspecao">Inspeção</option>
+            </select>
+          </div>
+
+          {/* Min KM */}
+          <div className="md:col-span-2">
+            <input
+              type="number"
+              min={0}
+              value={minKm}
+              onChange={(e) => {
+                setMinKm(parseInt(e.target.value || "0"));
+                setPagina(1);
+              }}
+              className="px-3 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full h-[42px]"
+              placeholder="KM mínimo"
             />
           </div>
-        )}
+
+          {/* Data campos vazios por agora */}
+          <div className="md:col-span-2">
+            <input
+              type="date"
+              className="px-3 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full h-[42px]"
+              placeholder="Data início"
+            />
+          </div>
+
+          <div className="md:col-span-2">
+            <input
+              type="date"
+              className="px-3 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full h-[42px]"
+              placeholder="Data fim"
+            />
+          </div>
+        </div>
+
+        {/* Filters Row 2 */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+          {/* Sort By */}
+          <div className="md:col-span-3">
+            <select
+              value={sortKey as string}
+              onChange={(e) => setSortKey(e.target.value as keyof Viatura)}
+              className="px-3 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full h-[42px]">
+              <option value="modelo">Ordenar: Modelo</option>
+              <option value="matricula">Ordenar: Matrícula</option>
+              <option value="ano">Ordenar: Ano</option>
+              <option value="kilometragem">Ordenar: Quilometragem</option>
+              <option value="status">Ordenar: Status</option>
+            </select>
+          </div>
+
+          {/* Sort Direction */}
+          <div className="md:col-span-2">
+            <select
+              value={sortDir}
+              onChange={(e) => setSortDir(e.target.value as any)}
+              className="px-3 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full h-[42px]">
+              <option value="asc">Ascendente</option>
+              <option value="desc">Descendente</option>
+            </select>
+          </div>
+
+          {/* Page Size */}
+          <div className="md:col-span-2">
+            <select
+              value={pageSize}
+              onChange={(e) => {
+                setPageSize(parseInt(e.target.value, 10));
+                setPagina(1);
+              }}
+              className="px-3 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full h-[42px]">
+              <option value={10}>10 por página</option>
+              <option value={25}>25 por página</option>
+              <option value={50}>50 por página</option>
+            </select>
+          </div>
+
+          {/* View Mode + Columns */}
+          <div className="md:col-span-5 flex items-center justify-end gap-2">
+            <div className="relative group inline-block">
+              <button className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors h-[42px]">
+                <Filter size={18} />
+                Colunas
+              </button>
+              <div className="absolute right-0 mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-2 hidden group-hover:block z-10">
+                <label className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={cols.motorista}
+                    onChange={(e) => setCols({ ...cols, motorista: e.target.checked })}
+                    className="rounded text-blue-600 focus:ring-blue-500"
+                  />
+                  Motorista
+                </label>
+                <label className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={cols.lugares}
+                    onChange={(e) => setCols({ ...cols, lugares: e.target.checked })}
+                    className="rounded text-blue-600 focus:ring-blue-500"
+                  />
+                  Lugares
+                </label>
+                <label className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={cols.arCondicionado}
+                    onChange={(e) => setCols({ ...cols, arCondicionado: e.target.checked })}
+                    className="rounded text-blue-600 focus:ring-blue-500"
+                  />
+                  Ar-condicionado
+                </label>
+                <label className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={cols.status}
+                    onChange={(e) => setCols({ ...cols, status: e.target.checked })}
+                    className="rounded text-blue-600 focus:ring-blue-500"
+                  />
+                  Status
+                </label>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setViewMode('list')}
+              className={`p-2.5 rounded-lg transition-all ${
+                viewMode === 'list'
+                  ? 'bg-blue-600 text-white shadow-md'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+              title="Lista"
+            >
+              <List size={18} />
+            </button>
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`p-2.5 rounded-lg transition-all ${
+                viewMode === 'grid'
+                  ? 'bg-blue-600 text-white shadow-md'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+              title="Grade"
+            >
+              <LayoutGrid size={18} />
+            </button>
+          </div>
+        </div>
       </div>
+
+      {/* List View */}
+      {viewMode === 'list' && (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-6">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
+                <tr>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Matrícula
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Veículo
+                  </th>
+                  {cols.motorista && (
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Motorista
+                    </th>
+                  )}
+                  {cols.lugares && (
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Lugares
+                    </th>
+                  )}
+                  {cols.arCondicionado && (
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Ar-condicionado
+                    </th>
+                  )}
+                  {cols.status && (
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Status
+                    </th>
+                  )}
+                  <th className="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Ações
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {dadosPagina.map((viatura) => (
+                  <tr key={viatura.id} className="hover:bg-blue-50 transition-colors">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="bg-blue-100 p-3 rounded-xl">
+                          <Car size={20} className="text-blue-600" />
+                        </div>
+                        <div>
+                          <p className="font-bold text-gray-900">{viatura.matricula}</p>
+                          <p className="text-xs text-gray-500">{viatura.ano}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div>
+                        <p className="font-semibold text-gray-900">{viatura.modelo}</p>
+                        <p className="text-sm text-gray-500">{viatura.marca} • {viatura.cor}</p>
+                      </div>
+                    </td>
+                    {cols.motorista && (
+                      <td className="px-6 py-4">
+                        {viatura.motoristanome ? (
+                          <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-semibold">
+                              {viatura.motoristanome.charAt(0)}
+                            </div>
+                            <span className="text-sm font-medium text-gray-900">{viatura.motoristanome}</span>
+                          </div>
+                        ) : (
+                          <span className="text-sm text-gray-400">Não alocado</span>
+                        )}
+                      </td>
+                    )}
+                    {cols.lugares && (
+                      <td className="px-6 py-4">
+                        <span className="text-sm text-gray-600">{viatura.lugares} lugares</span>
+                      </td>
+                    )}
+                    {cols.arCondicionado && (
+                      <td className="px-6 py-4">
+                        {viatura.arCondicionado ? (
+                          <span className="inline-flex items-center text-green-600">
+                            <Check className="h-4 w-4 mr-1" /> Sim
+                          </span>
+                        ) : (
+                          <span className="text-gray-500">Não</span>
+                        )}
+                      </td>
+                    )}
+                    {cols.status && (
+                      <td className="px-6 py-4">
+                        <Badge variant={getBadgeVariant(viatura.status) as any}>
+                          {viatura.status.charAt(0).toUpperCase() + viatura.status.slice(1)}
+                        </Badge>
+                      </td>
+                    )}
+                    <td className="px-6 py-4">
+                      <div className="flex items-center justify-center gap-2">
+                        <Link
+                          href={`/viaturas/${viatura.id}`}
+                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          title="Ver detalhes"
+                        >
+                          <Eye size={18} />
+                        </Link>
+                        <button
+                          onClick={() => router.push(`/viaturas/${viatura.id}`)}
+                          className="p-2 text-yellow-600 hover:bg-yellow-50 rounded-lg transition-colors"
+                          title="Editar"
+                        >
+                          <Edit size={18} />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(viatura.id)}
+                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          title="Excluir"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+
+                {dadosPagina.length === 0 && (
+                  <tr>
+                    <td colSpan={10} className="px-6 py-16 text-center">
+                      <Car size={64} className="mx-auto text-gray-300 mb-4" />
+                      <p className="text-gray-500 text-lg font-medium">Nenhuma viatura encontrada</p>
+                      <p className="text-gray-400 text-sm mt-1">Tente ajustar os filtros de busca</p>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Grid View */}
+      {viewMode === 'grid' && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+          {dadosPagina.map((viatura) => (
+            <div
+              key={viatura.id}
+              className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 group"
+            >
+              <div className="relative h-48 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center overflow-hidden">
+                <Car size={64} className="text-gray-300 group-hover:scale-110 transition-transform duration-300" />
+                
+                <div className="absolute top-3 right-3">
+                  <Badge variant={getBadgeVariant(viatura.status) as any} className="shadow-lg">
+                    {viatura.status.charAt(0).toUpperCase() + viatura.status.slice(1)}
+                  </Badge>
+                </div>
+
+                <div className="absolute bottom-3 left-3 bg-white/95 backdrop-blur-sm px-4 py-2 rounded-lg shadow-md">
+                  <p className="text-xs text-gray-500">Matrícula</p>
+                  <p className="font-bold text-gray-900">{viatura.matricula}</p>
+                </div>
+              </div>
+
+              <div className="p-5">
+                <h3 className="font-bold text-lg text-gray-900 mb-1">{viatura.modelo}</h3>
+                <p className="text-sm text-gray-500 mb-4">{viatura.marca} • {viatura.ano} • {viatura.cor}</p>
+
+                <div className="grid grid-cols-2 gap-3 mb-4">
+                  <div className="flex items-center gap-2 text-sm">
+                    <div className="bg-blue-50 p-1.5 rounded-lg">
+                      <Users size={14} className="text-blue-600" />
+                    </div>
+                    <span className="text-gray-700">{viatura.lugares} lugares</span>
+                  </div>
+                  
+                  <div className="flex items-center gap-2 text-sm">
+                    <div className="bg-blue-50 p-1.5 rounded-lg">
+                      <Fuel size={14} className="text-blue-600" />
+                    </div>
+                    <span className="text-gray-700">{viatura.tipoCombustivel || 'Gasolina'}</span>
+                  </div>
+
+                  <div className="flex items-center gap-2 text-sm">
+                    <div className="bg-blue-50 p-1.5 rounded-lg">
+                      <Gauge size={14} className="text-blue-600" />
+                    </div>
+                    <span className="text-gray-700">{viatura.kilometragem.toLocaleString()} km</span>
+                  </div>
+
+                  <div className="flex items-center gap-2 text-sm">
+                    <div className={`${viatura.arCondicionado ? 'bg-blue-50' : 'bg-gray-50'} p-1.5 rounded-lg`}>
+                      <Check size={14} className={viatura.arCondicionado ? 'text-blue-600' : 'text-gray-400'} />
+                    </div>
+                    <span className="text-gray-700">{viatura.arCondicionado ? 'Com AC' : 'Sem AC'}</span>
+                  </div>
+                </div>
+
+                {viatura.motoristanome && (
+                  <div className="bg-blue-50 p-3 rounded-lg mb-4 border border-blue-100">
+                    <p className="text-xs text-blue-700 mb-1">Motorista Responsável</p>
+                    <p className="font-semibold text-blue-900 text-sm flex items-center gap-2">
+                      <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center text-white text-xs">
+                        {viatura.motoristanome.charAt(0)}
+                      </div>
+                      {viatura.motoristanome}
+                    </p>
+                  </div>
+                )}
+
+                <div className="flex gap-2">
+                  <Link
+                    href={`/viaturas/${viatura.id}`}
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                  >
+                    <Eye size={16} />
+                    Ver Detalhes
+                  </Link>
+                  <button
+                    onClick={() => handleDelete(viatura.id)}
+                    className="p-2.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    title="Excluir"
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+
+          {dadosPagina.length === 0 && (
+            <div className="col-span-full text-center py-16 bg-white rounded-xl border-2 border-dashed border-gray-200">
+              <Car size={64} className="mx-auto text-gray-300 mb-4" />
+              <p className="text-gray-500 text-lg font-medium">Nenhuma viatura encontrada</p>
+              <p className="text-gray-400 text-sm mt-1">Tente ajustar os filtros de busca</p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Pagination */}
+      {viaturasOrdenadas.length > 0 && totalPaginas > 1 && (
+        <div className="flex justify-center">
+          <Paginacao
+            paginaAtual={pagina}
+            totalPaginas={totalPaginas}
+            onMudarPagina={setPagina}
+          />
+        </div>
+      )}
     </MainLayout>
   );
 };

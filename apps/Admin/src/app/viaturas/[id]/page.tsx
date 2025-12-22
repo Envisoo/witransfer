@@ -18,7 +18,13 @@ import {
   Camera,
   Activity,
   Shield,
-  Plus
+  Plus,
+  CheckCircle,
+  Clock,
+  TrendingUp,
+  MapPin,
+  Settings,
+  BarChart3
 } from "lucide-react";
 
 import MainLayout from "@/components/layout/MainLayout";
@@ -53,6 +59,14 @@ const extendedMockData = {
     mediaUrbana: '8.5 km/l',
     mediaEstrada: '12.0 km/l',
     ultimoAbastecimento: { data: '2023-12-10', litros: 45, tipo: 'Gasolina' }
+  },
+  estatisticas: {
+    viagensRealizadas: 342,
+    kmPercorridos: 45000,
+    mediaKmDia: 150,
+    tempoBomba: '98%',
+    custoManutencao: 355000,
+    eficienciaOperacional: 95
   }
 };
 
@@ -80,29 +94,81 @@ const DetalheViatura = () => {
   return (
     <MainLayout titulo={`Detalhes da Viatura`}>
       {/* Header com Navegação */}
-      <div className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <button 
-             onClick={() => router.push('/viaturas')}
-             className="flex items-center text-sm text-gray-500 hover:text-teal-600 mb-2 transition-colors">
-             <ArrowLeft size={16} className="mr-1" /> Voltar para Viaturas
-          </button>
-          <div className="flex items-center gap-3">
-             <h1 className="text-2xl font-bold text-gray-900">{viatura.ano} {viatura.marca} {viatura.modelo}</h1>
-             <Badge variant={viatura.status === 'ativa' ? 'success' : viatura.status === 'manutencao' ? 'warning' : 'destructive'}>
-                {viatura.status.toUpperCase()}
-             </Badge>
-          </div>
-          <p className="text-gray-500 text-sm mt-1">{viatura.matricula} • {viatura.cor} • {viatura.categoria}</p>
-        </div>
+      <div className="mb-6">
+        <button 
+           onClick={() => router.push('/viaturas')}
+           className="flex items-center text-sm text-gray-500 hover:text-teal-600 mb-4 transition-colors">
+           <ArrowLeft size={16} className="mr-1" /> Voltar para Viaturas
+        </button>
 
-        <div className="flex gap-2">
-           <Button variant="outline" className="flex items-center gap-2">
-              <Edit size={16} /> Editar
-           </Button>
-           <Button variant="primary" className="flex items-center gap-2">
-              <Calendar size={16} /> Agendar Manutenção
-           </Button>
+        {/* Card Header Premium */}
+        <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-8 text-white shadow-xl relative overflow-hidden">
+          {/* Background Pattern */}
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute inset-0" style={{
+              backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.1) 35px, rgba(255,255,255,.1) 70px)'
+            }}></div>
+          </div>
+          
+          <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div className="flex items-center gap-6">
+              {/* Ícone grande */}
+              <div className="bg-white/20 backdrop-blur-sm p-4 rounded-2xl">
+                <Car size={48} className="text-white" />
+              </div>
+              
+              <div>
+                <div className="flex items-center gap-3 mb-2">
+                  <h1 className="text-3xl font-bold">{viatura.ano} {viatura.marca} {viatura.modelo}</h1>
+                  <Badge variant={viatura.status === 'ativa' ? 'success' : viatura.status === 'manutencao' ? 'warning' : 'destructive'}>
+                     {viatura.status.toUpperCase()}
+                  </Badge>
+                </div>
+                <p className="text-blue-100 flex items-center gap-4 text-sm">
+                  <span className="flex items-center gap-1">
+                    <MapPin size={14} /> {viatura.matricula}
+                  </span>
+                  <span>•</span>
+                  <span>{viatura.cor}</span>
+                  <span>•</span>
+                  <span>{viatura.categoria}</span>
+                  <span>•</span>
+                  <span className="flex items-center gap-1">
+                    <Gauge size={14} /> {viatura.kilometragem.toLocaleString()} km
+                  </span>
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+               <Button variant="outline" className="flex items-center gap-2 bg-white text-blue-600 hover:bg-blue-50 border-0">
+                  <Edit size={16} /> Editar
+               </Button>
+               <Button variant="primary" className="flex items-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-gray-900 border-0">
+                  <Calendar size={16} /> Agendar Manutenção
+               </Button>
+            </div>
+          </div>
+
+          {/* Quick Stats no Header */}
+          <div className="relative z-10 grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-6 border-t border-white/20">
+            <div>
+              <p className="text-blue-100 text-xs mb-1">Viagens Realizadas</p>
+              <p className="text-2xl font-bold">{extendedMockData.estatisticas.viagensRealizadas}</p>
+            </div>
+            <div>
+              <p className="text-blue-100 text-xs mb-1">Km Percorridos</p>
+              <p className="text-2xl font-bold">{extendedMockData.estatisticas.kmPercorridos.toLocaleString()}</p>
+            </div>
+            <div>
+              <p className="text-blue-100 text-xs mb-1">Média KM/Dia</p>
+              <p className="text-2xl font-bold">{extendedMockData.estatisticas.mediaKmDia}</p>
+            </div>
+            <div>
+              <p className="text-blue-100 text-xs mb-1">Eficiência</p>
+              <p className="text-2xl font-bold">{extendedMockData.estatisticas.eficienciaOperacional}%</p>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -123,7 +189,7 @@ const DetalheViatura = () => {
                 className={`
                   flex items-center gap-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors
                   ${activeTab === tab.id
-                    ? 'border-teal-500 text-teal-600'
+                    ? 'border-blue-500 text-blue-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}
                 `}
               >
@@ -140,119 +206,211 @@ const DetalheViatura = () => {
         
         {/* ABA: VISÃO GERAL */}
         {activeTab === 'geral' && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-             {/* Card Principal: Foto e Status */}
-             <div className="md:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="bg-gray-100 h-64 w-full flex items-center justify-center relative">
-                   <Car size={64} className="text-gray-300" />
-                   <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold shadow-sm">
-                      {viatura.kilometragem.toLocaleString()} km
-                   </div>
-                </div>
-                <div className="p-6">
-                   <h3 className="text-lg font-bold text-gray-900 mb-4">Especificações Principais</h3>
-                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                      <div className="p-3 bg-gray-50 rounded-lg">
-                         <p className="text-xs text-gray-500 mb-1">Combustível</p>
-                         <div className="flex items-center gap-2 font-semibold">
-                            <Fuel size={14} className="text-teal-600" />
-                            {viatura.tipoCombustivel || 'Gasolina'}
-                         </div>
+          <div className="space-y-6">
+            {/* Grid de Cards Principais */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Card de Foto e Especificações */}
+              <div className="md:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                 <div className="bg-gradient-to-br from-gray-100 to-gray-200 h-72 w-full flex items-center justify-center relative">
+                    <Car size={80} className="text-gray-400" />
+                    <div className="absolute top-4 right-4 flex gap-2">
+                      <div className="bg-white/90 backdrop-blur px-3 py-1.5 rounded-full text-xs font-bold shadow-lg flex items-center gap-1">
+                        <Gauge size={14} className="text-blue-600" />
+                        {viatura.kilometragem.toLocaleString()} km
                       </div>
-                      <div className="p-3 bg-gray-50 rounded-lg">
-                         <p className="text-xs text-gray-500 mb-1">Transmissão</p>
-                         <div className="flex items-center gap-2 font-semibold">
-                            <Gauge size={14} className="text-purple-600" />
-                            {viatura.transmissao || 'Manual'}
-                         </div>
+                      <div className="bg-white/90 backdrop-blur px-3 py-1.5 rounded-full text-xs font-bold shadow-lg flex items-center gap-1">
+                        <Calendar size={14} className="text-purple-600" />
+                        {viatura.ano}
                       </div>
-                      <div className="p-3 bg-gray-50 rounded-lg">
-                         <p className="text-xs text-gray-500 mb-1">Tração</p>
-                         <div className="flex items-center gap-2 font-semibold">
-                            <Activity size={14} className="text-blue-600" />
-                            4x2
-                         </div>
-                      </div>
-                      <div className="p-3 bg-gray-50 rounded-lg">
-                         <p className="text-xs text-gray-500 mb-1">Lugares</p>
-                         <div className="flex items-center gap-2 font-semibold">
-                            <Users size={14} className="text-orange-600" />
-                            {viatura.lugares || 5}
-                         </div>
-                      </div>
-                   </div>
-                </div>
-             </div>
+                    </div>
+                    <button className="absolute bottom-4 right-4 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors flex items-center gap-2">
+                      <Camera size={16} />
+                      Adicionar Fotos
+                    </button>
+                 </div>
+                 
+                 <div className="p-6">
+                    <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                      <Settings size={20} className="text-gray-600" />
+                      Especificações Técnicas
+                    </h3>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                       <div className="bg-gradient-to-br from-teal-50 to-cyan-50 p-4 rounded-xl border border-teal-100">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Fuel size={16} className="text-teal-600" />
+                            <p className="text-xs text-gray-600">Combustível</p>
+                          </div>
+                          <p className="font-bold text-gray-900">{viatura.tipoCombustivel || 'Gasolina'}</p>
+                       </div>
+                       
+                       <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-4 rounded-xl border border-purple-100">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Gauge size={16} className="text-purple-600" />
+                            <p className="text-xs text-gray-600">Transmissão</p>
+                          </div>
+                          <p className="font-bold text-gray-900">{viatura.transmissao || 'Manual'}</p>
+                       </div>
+                       
+                       <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-100">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Activity size={16} className="text-blue-600" />
+                            <p className="text-xs text-gray-600">Tração</p>
+                          </div>
+                          <p className="font-bold text-gray-900">4x2</p>
+                       </div>
+                       
+                       <div className="bg-gradient-to-br from-orange-50 to-amber-50 p-4 rounded-xl border border-orange-100">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Users size={16} className="text-orange-600" />
+                            <p className="text-xs text-gray-600">Lugares</p>
+                          </div>
+                          <p className="font-bold text-gray-900">{viatura.lugares || 5}</p>
+                       </div>
+                    </div>
+                 </div>
+              </div>
 
-             {/* Card Lateral: Motorista e Localização */}
-             <div className="space-y-6">
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                   <h3 className="text-sm font-bold text-gray-900 mb-4 uppercase tracking-wider">Motorista Responsável</h3>
-                   {viatura.motoristaid ? (
-                      <div className="flex items-center gap-4">
-                         <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center text-teal-700 font-bold text-lg">
-                            {viatura.motoristanome?.charAt(0)}
-                         </div>
-                         <div>
-                            <p className="font-bold text-gray-900">{viatura.motoristanome}</p>
-                            <p className="text-xs text-gray-500">ID: #{viatura.motoristaid}</p>
-                         </div>
-                      </div>
-                   ) : (
-                      <div className="text-center py-4 bg-gray-50 rounded-lg border border-dashed border-gray-300">
-                         <p className="text-sm text-gray-500">Nenhum motorista alocado</p>
-                         <button className="text-xs text-teal-600 font-medium mt-1 hover:underline">Atribuir Motorista</button>
-                      </div>
-                   )}
-                </div>
+              {/* Card Lateral: Motorista e Performance */}
+              <div className="space-y-6">
+                 <div className="bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl shadow-lg p-6 text-white">
+                    <h3 className="text-sm font-bold mb-4 uppercase tracking-wider opacity-90">Motorista Responsável</h3>
+                    {viatura.motoristaid ? (
+                       <div className="flex items-center gap-4">
+                          <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white font-bold text-xl border-2 border-white/30">
+                             {viatura.motoristanome?.charAt(0)}
+                          </div>
+                          <div>
+                             <p className="font-bold text-lg">{viatura.motoristanome}</p>
+                             <p className="text-xs text-blue-100">ID: #{viatura.motoristaid}</p>
+                          </div>
+                       </div>
+                    ) : (
+                       <div className="text-center py-6 bg-white/10 backdrop-blur-sm rounded-lg border-2 border-dashed border-white/30">
+                          <Users size={32} className="mx-auto mb-2 opacity-50" />
+                          <p className="text-sm mb-2">Nenhum motorista alocado</p>
+                          <button className="text-xs bg-white text-blue-600 px-4 py-1.5 rounded-full font-medium hover:bg-blue-50 transition-colors">
+                            Atribuir Motorista
+                          </button>
+                       </div>
+                    )}
+                 </div>
 
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                   <h3 className="text-sm font-bold text-gray-900 mb-4 uppercase tracking-wider">Desempenho Rápido</h3>
-                   <div className="space-y-4">
-                      <div>
-                         <div className="flex justify-between text-sm mb-1">
-                            <span className="text-gray-500">Consumo Médio</span>
-                            <span className="font-medium">{extendedMockData.consumo.mediaUrbana}</span>
-                         </div>
-                         <div className="w-full bg-gray-100 rounded-full h-2">
-                            <div className="bg-green-500 h-2 rounded-full" style={{ width: '70%' }}></div>
-                         </div>
-                      </div>
-                      <div>
-                         <div className="flex justify-between text-sm mb-1">
-                            <span className="text-gray-500">Saúde Motor</span>
-                            <span className="font-medium text-green-600">98%</span>
-                         </div>
-                         <div className="w-full bg-gray-100 rounded-full h-2">
-                            <div className="bg-green-500 h-2 rounded-full" style={{ width: '98%' }}></div>
-                         </div>
-                      </div>
-                   </div>
-                </div>
-             </div>
+                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                    <h3 className="text-sm font-bold text-gray-900 mb-4 uppercase tracking-wider flex items-center gap-2">
+                      <TrendingUp size={16} className="text-green-600" />
+                      Performance
+                    </h3>
+                    <div className="space-y-4">
+                       <div>
+                          <div className="flex justify-between text-sm mb-2">
+                             <span className="text-gray-600 flex items-center gap-1">
+                              <Fuel size={14} />
+                              Consumo Médio
+                             </span>
+                             <span className="font-semibold text-gray-900">{extendedMockData.consumo.mediaUrbana}</span>
+                          </div>
+                          <div className="w-full bg-gray-100 rounded-full h-2.5">
+                             <div className="bg-gradient-to-r from-green-500 to-emerald-500 h-2.5 rounded-full" style={{ width: '85%' }}></div>
+                          </div>
+                       </div>
+                       
+                       <div>
+                          <div className="flex justify-between text-sm mb-2">
+                             <span className="text-gray-600 flex items-center gap-1">
+                              <Activity size={14} />
+                              Saúde Motor
+                             </span>
+                             <span className="font-semibold text-green-600">98%</span>
+                          </div>
+                          <div className="w-full bg-gray-100 rounded-full h-2.5">
+                             <div className="bg-gradient-to-r from-green-500 to-emerald-500 h-2.5 rounded-full" style={{ width: '98%' }}></div>
+                          </div>
+                       </div>
 
-             {/* Informações Detalhadas (Geral) */}
-             <div className="md:col-span-3 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                <h3 className="text-lg font-bold text-gray-900 mb-4 border-b pb-2">Detalhes Técnicos</h3>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                   <div>
-                      <p className="text-sm text-gray-500">Número de Chassi (VIN)</p>
-                      <p className="font-medium text-gray-900 mt-1">{viatura.numeroChassi || 'N/A'}</p>
-                   </div>
-                   <div>
-                      <p className="text-sm text-gray-500">Número do Motor</p>
-                      <p className="font-medium text-gray-900 mt-1">{viatura.numeroMotor || 'N/A'}</p>
-                   </div>
-                   <div>
-                      <p className="text-sm text-gray-500">Potência</p>
-                      <p className="font-medium text-gray-900 mt-1">{viatura.potencia ? `${viatura.potencia} cv` : 'N/A'}</p>
-                   </div>
-                   <div>
-                      <p className="text-sm text-gray-500">Cilindrada</p>
-                      <p className="font-medium text-gray-900 mt-1">{viatura.cilindrada ? `${viatura.cilindrada} cc` : 'N/A'}</p>
-                   </div>
+                       <div>
+                          <div className="flex justify-between text-sm mb-2">
+                             <span className="text-gray-600 flex items-center gap-1">
+                              <CheckCircle size={14} />
+                              Tempo em Operação
+                             </span>
+                             <span className="font-semibold text-blue-600">{extendedMockData.estatisticas.tempoBomba}</span>
+                          </div>
+                          <div className="w-full bg-gray-100 rounded-full h-2.5">
+                             <div className="bg-gradient-to-r from-blue-500 to-indigo-500 h-2.5 rounded-full" style={{ width: '98%' }}></div>
+                          </div>
+                       </div>
+                    </div>
+                 </div>
+              </div>
+            </div>
+
+            {/* Detalhes Técnicos Expandidos */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+               <h3 className="text-lg font-bold text-gray-900 mb-6 pb-3 border-b flex items-center gap-2">
+                <BarChart3 size={20} className="text-blue-600" />
+                Informações Técnicas Detalhadas
+               </h3>
+               <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                     <p className="text-sm text-gray-500 mb-1">Número de Chassi (VIN)</p>
+                     <p className="font-semibold text-gray-900">{viatura.numeroChassi || 'N/A'}</p>
+                  </div>
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                     <p className="text-sm text-gray-500 mb-1">Número do Motor</p>
+                     <p className="font-semibold text-gray-900">{viatura.numeroMotor || 'N/A'}</p>
+                  </div>
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                     <p className="text-sm text-gray-500 mb-1">Potência</p>
+                     <p className="font-semibold text-gray-900">{viatura.potencia ? `${viatura.potencia} cv` : 'N/A'}</p>
+                  </div>
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                     <p className="text-sm text-gray-500 mb-1">Cilindrada</p>
+                     <p className="font-semibold text-gray-900">{viatura.cilindrada ? `${viatura.cilindrada} cc` : 'N/A'}</p>
+                  </div>
+               </div>
+            </div>
+
+            {/* Estatísticas de Uso */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl p-6 text-white shadow-lg">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="bg-white/20 p-3 rounded-lg">
+                    <TrendingUp size={24} />
+                  </div>
+                  <div className="text-right">
+                    <p className="text-3xl font-bold">{extendedMockData.estatisticas.viagensRealizadas}</p>
+                    <p className="text-green-100 text-sm">Viagens</p>
+                  </div>
                 </div>
-             </div>
+                <p className="text-green-100">Viagens Realizadas</p>
+              </div>
+
+              <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl p-6 text-white shadow-lg">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="bg-white/20 p-3 rounded-lg">
+                    <Gauge size={24} />
+                  </div>
+                  <div className="text-right">
+                    <p className="text-3xl font-bold">{extendedMockData.estatisticas.kmPercorridos.toLocaleString()}</p>
+                    <p className="text-blue-100 text-sm">Quilômetros</p>
+                  </div>
+                </div>
+                <p className="text-blue-100">Total Percorrido</p>
+              </div>
+
+              <div className="bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl p-6 text-white shadow-lg">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="bg-white/20 p-3 rounded-lg">
+                    <Wrench size={24} />
+                  </div>
+                  <div className="text-right">
+                    <p className="text-3xl font-bold">{(extendedMockData.estatisticas.custoManutencao / 1000).toFixed(0)}K</p>
+                    <p className="text-purple-100 text-sm">Kz</p>
+                  </div>
+                </div>
+                <p className="text-purple-100">Custo Manutenção</p>
+              </div>
+            </div>
           </div>
         )}
 
@@ -262,29 +420,47 @@ const DetalheViatura = () => {
               {/* Histórico */}
               <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                  <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-lg font-bold text-gray-900">Histórico de Manutenção</h3>
-                    <Button size="sm" variant="outline"><Plus size={16} className="mr-2"/> Adicionar Registro</Button>
+                    <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                      <Clock size={20} className="text-blue-600" />
+                      Histórico de Manutenção
+                    </h3>
+                    <Button size="sm" variant="primary" className="flex items-center gap-2">
+                      <Plus size={16}/>Adicionar Registro
+                    </Button>
                  </div>
                  
                  <div className="overflow-x-auto">
                     <table className="w-full text-sm text-left">
-                       <thead className="bg-gray-50 text-gray-500 uppercase text-xs">
+                       <thead className="bg-gradient-to-r from-gray-50 to-gray-100 text-gray-600 uppercase text-xs">
                           <tr>
-                             <th className="px-4 py-3">Data</th>
-                             <th className="px-4 py-3">Serviço</th>
-                             <th className="px-4 py-3">Oficina</th>
-                             <th className="px-4 py-3">KM</th>
-                             <th className="px-4 py-3">Custo</th>
+                             <th className="px-6 py-4 rounded-tl-lg">Data</th>
+                             <th className="px-6 py-4">Serviço</th>
+                             <th className="px-6 py-4">Oficina</th>
+                             <th className="px-6 py-4">KM</th>
+                             <th className="px-6 py-4 rounded-tr-lg text-right">Custo</th>
                           </tr>
                        </thead>
                        <tbody className="divide-y divide-gray-100">
-                          {extendedMockData.manutencao.map(repo => (
-                             <tr key={repo.id} className="hover:bg-gray-50">
-                                <td className="px-4 py-3">{new Date(repo.data).toLocaleDateString()}</td>
-                                <td className="px-4 py-3 font-medium text-gray-900">{repo.tipo}</td>
-                                <td className="px-4 py-3">{repo.oficina}</td>
-                                <td className="px-4 py-3">{repo.quilometragem.toLocaleString()} km</td>
-                                <td className="px-4 py-3 text-teal-600 font-medium">{repo.custo.toLocaleString()} Kz</td>
+                          {extendedMockData.manutencao.map((repo) => (
+                             <tr key={repo.id} className="hover:bg-blue-50 transition-colors">
+                                <td className="px-6 py-4 text-gray-900">
+                                  <div className="flex items-center gap-2">
+                                    <Calendar size={14} className="text-gray-400" />
+                                    {new Date(repo.data).toLocaleDateString()}
+                                  </div>
+                                </td>
+                                <td className="px-6 py-4">
+                                  <span className="font-semibold text-gray-900">{repo.tipo}</span>
+                                </td>
+                                <td className="px-6 py-4 text-gray-600">{repo.oficina}</td>
+                                <td className="px-6 py-4 text-gray-600">
+                                  <span className="bg-gray-100 px-2 py-1 rounded text-xs font-medium">
+                                    {repo.quilometragem.toLocaleString()} km
+                                  </span>
+                                </td>
+                                <td className="px-6 py-4 text-right">
+                                  <span className="text-blue-600 font-bold">{repo.custo.toLocaleString()} Kz</span>
+                                </td>
                              </tr>
                           ))}
                        </tbody>
@@ -295,37 +471,62 @@ const DetalheViatura = () => {
               {/* Estado Geral */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                  <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                    <h3 className="text-lg font-bold text-gray-900 mb-4">Próxima Manutenção</h3>
-                    <div className="flex items-center gap-4 bg-yellow-50 p-4 rounded-lg border border-yellow-100 mb-4">
-                       <AlertTriangle className="text-yellow-600" size={24} />
-                       <div>
-                          <p className="font-bold text-yellow-900">Troca de Óleo Prevista</p>
-                          <p className="text-sm text-yellow-700">Em 1.500 km ou até 15/05/2024</p>
+                    <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                      <AlertTriangle size={20} className="text-yellow-600" />
+                      Próxima Manutenção
+                    </h3>
+                    <div className="bg-gradient-to-br from-yellow-50 to-amber-50 p-5 rounded-xl border-2 border-yellow-200 mb-4">
+                       <div className="flex items-start gap-4">
+                         <AlertTriangle className="text-yellow-600 flex-shrink-0 mt-1" size={24} />
+                         <div className="flex-1">
+                           <p className="font-bold text-yellow-900 mb-1">Troca de Óleo Prevista</p>
+                           <p className="text-sm text-yellow-700">Em <span className="font-semibold">1.500 km</span> ou até <span className="font-semibold">15/05/2024</span></p>
+                         </div>
                        </div>
                     </div>
-                    <ul className="space-y-2 text-sm text-gray-600">
-                       <li className="flex justify-between">
-                          <span>Revisão Geral:</span>
-                          <span className="font-medium">10.000 km restantes</span>
-                       </li>
-                       <li className="flex justify-between">
-                          <span>Troca de Pneus:</span>
-                          <span className="font-medium text-green-600">Recente</span>
-                       </li>
-                    </ul>
+                    <div className="space-y-3">
+                       <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                          <span className="text-sm text-gray-600">Revisão Geral:</span>
+                          <span className="font-semibold text-gray-900">10.000 km restantes</span>
+                       </div>
+                       <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
+                          <span className="text-sm text-gray-600">Troca de Pneus:</span>
+                          <span className="font-semibold text-green-600 flex items-center gap-1">
+                            <CheckCircle size={14} />
+                            Recente
+                          </span>
+                       </div>
+                    </div>
                  </div>
 
                  <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                    <h3 className="text-lg font-bold text-gray-900 mb-4">Relatório de Estado</h3>
-                    <div className="mb-4">
-                       <p className="text-sm text-gray-500 mb-1">Condição Geral</p>
-                       <p className="font-semibold text-lg text-green-600">{extendedMockData.estado.geral}</p>
+                    <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                      <Shield size={20} className="text-green-600" />
+                      Relatório de Estado
+                    </h3>
+                    <div className="mb-6 text-center bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-xl border border-green-200">
+                       <p className="text-sm text-gray-600 mb-2">Condição Geral</p>
+                       <p className="text-4xl font-bold text-green-600">{extendedMockData.estado.geral}</p>
+                       <div className="flex items-center justify-center gap-1 mt-2">
+                         {[1,2,3,4,5].map(i => (
+                           <div key={i} className={`w-2 h-2 rounded-full ${i <= 4 ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+                         ))}
+                       </div>
                     </div>
                     <div>
-                       <p className="text-sm font-medium text-gray-900 mb-2">Avarias / Danos Registrados:</p>
-                       <ul className="list-disc pl-5 text-sm text-gray-600 space-y-1">
+                       <p className="text-sm font-semibold text-gray-900 mb-3">Avarias / Danos Registrados:</p>
+                       <ul className="space-y-2">
                           {extendedMockData.estado.danos.map((dano, i) => (
-                             <li key={i}>{dano.tipo} em {dano.local} <span className="text-xs bg-gray-100 px-2 py-0.5 rounded text-gray-500">{dano.severidade}</span></li>
+                             <li key={i} className="flex items-start gap-2 text-sm bg-red-50 p-3 rounded-lg border border-red-100">
+                               <AlertTriangle size={14} className="text-red-500 flex-shrink-0 mt-0.5" />
+                               <div className="flex-1">
+                                 <span className="text-gray-900 font-medium">{dano.tipo}</span>
+                                 <span className="text-gray-600"> em {dano.local}</span>
+                                 <span className="ml-2 text-xs bg-gray-100 px-2 py-0.5 rounded text-gray-600">
+                                   Severidade: {dano.severidade}
+                                 </span>
+                               </div>
+                             </li>
                           ))}
                        </ul>
                     </div>
@@ -340,46 +541,72 @@ const DetalheViatura = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                  {/* Seguro */}
                  <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                    <div className="flex items-start justify-between mb-4">
-                       <div className="flex items-center gap-2">
-                          <Shield className="text-blue-600" />
-                          <h3 className="font-bold text-gray-900">Seguro Automóvel</h3>
+                    <div className="flex items-start justify-between mb-6">
+                       <div className="flex items-center gap-3">
+                          <div className="bg-blue-100 p-3 rounded-xl">
+                            <Shield className="text-blue-600" size={24} />
+                          </div>
+                          <div>
+                            <h3 className="font-bold text-gray-900">Seguro Automóvel</h3>
+                            <p className="text-xs text-gray-500">Proteção completa</p>
+                          </div>
                        </div>
                        <Badge variant="success">Válido</Badge>
                     </div>
-                    <div className="space-y-3">
-                       <div>
-                          <p className="text-xs text-gray-500">Companhia</p>
-                          <p className="font-medium">{extendedMockData.documentos.seguro.companhia}</p>
+                    <div className="space-y-4">
+                       <div className="bg-gray-50 p-3 rounded-lg">
+                          <p className="text-xs text-gray-500 mb-1">Companhia</p>
+                          <p className="font-semibold text-gray-900">{extendedMockData.documentos.seguro.companhia}</p>
                        </div>
-                       <div>
-                          <p className="text-xs text-gray-500">Apólice</p>
-                          <p className="font-medium">{extendedMockData.documentos.seguro.apolice}</p>
+                       <div className="bg-gray-50 p-3 rounded-lg">
+                          <p className="text-xs text-gray-500 mb-1">Apólice</p>
+                          <p className="font-semibold text-gray-900">{extendedMockData.documentos.seguro.apolice}</p>
                        </div>
-                       <div>
-                          <p className="text-xs text-gray-500">Validade</p>
-                          <p className="font-medium">{new Date(extendedMockData.documentos.seguro.validade).toLocaleDateString()}</p>
+                       <div className="bg-gray-50 p-3 rounded-lg">
+                          <p className="text-xs text-gray-500 mb-1">Validade</p>
+                          <p className="font-semibold text-gray-900 flex items-center gap-2">
+                            <Calendar size={14} className="text-gray-400" />
+                            {new Date(extendedMockData.documentos.seguro.validade).toLocaleDateString()}
+                          </p>
                        </div>
                     </div>
                  </div>
 
                  {/* Inspeção */}
                  <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                    <div className="flex items-start justify-between mb-4">
-                       <div className="flex items-center gap-2">
-                          <FileText className="text-purple-600" />
-                          <h3 className="font-bold text-gray-900">Inspeção Obrigatória</h3>
+                    <div className="flex items-start justify-between mb-6">
+                       <div className="flex items-center gap-3">
+                          <div className="bg-purple-100 p-3 rounded-xl">
+                            <FileText className="text-purple-600" size={24} />
+                          </div>
+                          <div>
+                            <h3 className="font-bold text-gray-900">Inspeção Obrigatória</h3>
+                            <p className="text-xs text-gray-500">Revisão técnica</p>
+                          </div>
                        </div>
                        <Badge variant="success">Regular</Badge>
                     </div>
-                    <div className="space-y-3">
-                       <div>
-                          <p className="text-xs text-gray-500">Última Inspeção</p>
-                          <p className="font-medium">{new Date(extendedMockData.documentos.inspecao.data).toLocaleDateString()}</p>
+                    <div className="space-y-4">
+                       <div className="bg-gray-50 p-3 rounded-lg">
+                          <p className="text-xs text-gray-500 mb-1">Última Inspeção</p>
+                          <p className="font-semibold text-gray-900 flex items-center gap-2">
+                            <Calendar size={14} className="text-gray-400" />
+                            {new Date(extendedMockData.documentos.inspecao.data).toLocaleDateString()}
+                          </p>
                        </div>
-                       <div>
-                          <p className="text-xs text-gray-500">Válido até</p>
-                          <p className="font-medium">{new Date(extendedMockData.documentos.inspecao.validade).toLocaleDateString()}</p>
+                       <div className="bg-gray-50 p-3 rounded-lg">
+                          <p className="text-xs text-gray-500 mb-1">Válido até</p>
+                          <p className="font-semibold text-gray-900 flex items-center gap-2">
+                            <Calendar size={14} className="text-gray-400" />
+                            {new Date(extendedMockData.documentos.inspecao.validade).toLocaleDateString()}
+                          </p>
+                       </div>
+                       <div className="bg-green-50 p-3 rounded-lg border border-green-200">
+                          <p className="text-xs text-green-700 mb-1">Status</p>
+                          <p className="font-semibold text-green-800 flex items-center gap-2">
+                            <CheckCircle size={16} />
+                            Em Dia
+                          </p>
                        </div>
                     </div>
                  </div>
@@ -387,24 +614,41 @@ const DetalheViatura = () => {
               
               {/* Multas / Pendências */}
               <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                 <h3 className="font-bold text-gray-900 mb-4">Pendências e Multas</h3>
+                 <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                   <AlertTriangle size={20} className="text-red-600" />
+                   Pendências e Multas
+                 </h3>
                  {extendedMockData.documentos.multas.length > 0 ? (
                     <div className="space-y-3">
                        {extendedMockData.documentos.multas.map(multa => (
-                          <div key={multa.id} className="flex justify-between items-center bg-red-50 p-3 rounded-lg border border-red-100">
-                             <div>
-                                <p className="font-medium text-red-900">{multa.motivo}</p>
-                                <p className="text-xs text-red-700">{new Date(multa.data).toLocaleDateString()}</p>
+                          <div key={multa.id} className="flex justify-between items-center bg-red-50 p-5 rounded-xl border-2 border-red-100">
+                             <div className="flex items-start gap-4">
+                               <div className="bg-red-100 p-2 rounded-lg">
+                                 <AlertTriangle size={20} className="text-red-600" />
+                               </div>
+                               <div>
+                                 <p className="font-semibold text-red-900">{multa.motivo}</p>
+                                 <p className="text-xs text-red-700 flex items-center gap-1 mt-1">
+                                   <Calendar size={12} />
+                                   {new Date(multa.data).toLocaleDateString()}
+                                 </p>
+                               </div>
                              </div>
                              <div className="text-right">
-                                <p className="font-bold text-red-700">{multa.valor.toLocaleString()} Kz</p>
-                                <span className="text-xs bg-red-200 text-red-800 px-2 py-0.5 rounded-full">{multa.status}</span>
+                                <p className="text-2xl font-bold text-red-700">{multa.valor.toLocaleString()} Kz</p>
+                                <span className="inline-block text-xs bg-red-200 text-red-800 px-3 py-1 rounded-full font-medium mt-1">
+                                  {multa.status}
+                                </span>
                              </div>
                           </div>
                        ))}
                     </div>
                  ) : (
-                    <p className="text-gray-500">Nada consta.</p>
+                    <div className="text-center py-12 bg-green-50 rounded-xl border border-green-100">
+                      <CheckCircle size={48} className="mx-auto text-green-600 mb-3" />
+                      <p className="text-green-800 font-semibold">Nenhuma pendência encontrada</p>
+                      <p className="text-green-600 text-sm mt-1">Veículo sem multas ou restrições</p>
+                    </div>
                  )}
               </div>
            </div>
@@ -413,25 +657,42 @@ const DetalheViatura = () => {
         {/* ABA: FOTOS */}
         {activeTab === 'fotos' && (
            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h3 className="text-lg font-bold text-gray-900 mb-6">Galeria do Veículo</h3>
+              <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+                <Camera size={20} className="text-purple-600" />
+                Galeria do Veículo
+              </h3>
               
               <div className="mb-8">
-                 <h4 className="text-sm font-semibold text-gray-700 mb-3 uppercase">Externas</h4>
+                 <div className="flex items-center justify-between mb-4">
+                   <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Fotos Externas</h4>
+                   <button className="text-xs text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
+                     <Plus size={14} />
+                     Adicionar Foto
+                   </button>
+                 </div>
                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {[1, 2, 3, 4].map(i => (
-                       <div key={i} className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center hover:opacity-90 cursor-pointer transition-opacity">
-                          <Car className="text-gray-300" size={32} />
+                       <div key={i} className="group relative aspect-video bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center hover:shadow-lg transition-all cursor-pointer overflow-hidden border-2 border-transparent hover:border-blue-400">
+                          <Car className="text-gray-300 group-hover:text-gray-400 transition-colors" size={32} />
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors"></div>
                        </div>
                     ))}
                  </div>
               </div>
 
-              <div className="mb-8">
-                 <h4 className="text-sm font-semibold text-gray-700 mb-3 uppercase">Internas</h4>
+              <div>
+                 <div className="flex items-center justify-between mb-4">
+                   <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Fotos Internas</h4>
+                   <button className="text-xs text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
+                     <Plus size={14} />
+                     Adicionar Foto
+                   </button>
+                 </div>
                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {[1, 2, 3].map(i => (
-                       <div key={i} className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center hover:opacity-90 cursor-pointer transition-opacity">
-                          <Car className="text-gray-300" size={32} />
+                       <div key={i} className="group relative aspect-video bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center hover:shadow-lg transition-all cursor-pointer overflow-hidden border-2 border-transparent hover:border-blue-400">
+                          <Car className="text-gray-300 group-hover:text-gray-400 transition-colors" size={32} />
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors"></div>
                        </div>
                     ))}
                  </div>

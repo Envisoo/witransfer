@@ -1,11 +1,11 @@
+/** @format */
+
 'use client';
 
 import React, { useState } from 'react';
-import { ArrowLeft, Download, Trophy, TrendingUp, Users, Star, AlertCircle, CheckCircle, Award } from 'lucide-react';
+import { ArrowLeft, Download, Star, Users, ChevronRight, Award } from 'lucide-react';
 import Link from 'next/link';
 import MainLayout from '@/components/layout/MainLayout';
-import Button from '@/components/common/Button';
-import Badge from '@/components/common/Badge';
 import {
   BarChart,
   Bar,
@@ -86,204 +86,204 @@ const RelatorioDesempenho = () => {
 
   return (
     <MainLayout titulo="Relatório de Desempenho">
+      {/* Breadcrumb */}
       <div className="mb-6">
         <Link 
           href="/relatorios" 
-          className="flex items-center gap-2 text-teal-600 hover:text-teal-700 font-medium transition-colors"
+          className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium transition-colors text-sm"
         >
-          <ArrowLeft size={20} />
+          <ArrowLeft size={16} />
           Voltar para Relatórios
         </Link>
       </div>
 
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Relatório de Desempenho</h1>
-        <p className="text-gray-600">Rankings, avaliações e análise de performance</p>
+        <h1 className="text-2xl font-bold text-gray-900 mb-1">Relatório de Desempenho</h1>
+        <p className="text-sm text-gray-500">Rankings, avaliações e análise de performance</p>
       </div>
 
       {/* Filtros */}
-      <div className="bg-white rounded-xl shadow-md p-6 mb-8">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">Filtros de Período</h3>
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
+        <h3 className="text-sm font-semibold text-gray-700 mb-4 uppercase tracking-wide">Período de Análise</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="form-label">Data Inicial</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Data Inicial</label>
             <input
               type="date"
               value={dataInicio}
               onChange={(e) => setDataInicio(e.target.value)}
-              className="form-input"
+              className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
             />
           </div>
           <div>
-            <label className="form-label">Data Final</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Data Final</label>
             <input
               type="date"
               value={dataFim}
               onChange={(e) => setDataFim(e.target.value)}
-              className="form-input"
+              className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
             />
           </div>
-          <div className="flex items-end gap-2">
-            <Button variant="primary" fullWidth>
+          <div className="flex items-end">
+            <button className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
               Atualizar Relatório
-            </Button>
+            </button>
           </div>
         </div>
       </div>
 
       {/* Indicadores Principais */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <div className="bg-gradient-to-br from-red-500 to-red-600 rounded-xl p-8 text-white shadow-lg">
-          <div className="flex items-center justify-between mb-4">
-            <AlertCircle size={40} className="opacity-80" />
-            <div className="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2">
-              <p className="text-xs font-medium opacity-90">Meta: &lt; 10%</p>
+        <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+          <div className="flex justify-between items-start mb-4">
+            <div className="p-3 bg-red-50 rounded-xl">
+              <Award className="text-red-600" size={24} />
+            </div>
+            <div className="bg-red-50 rounded-lg px-4 py-2">
+              <p className="text-xs font-medium text-red-600">Meta: &lt; 10%</p>
             </div>
           </div>
-          <p className="text-lg font-medium opacity-90 mb-2">Taxa de Cancelamento</p>
-          <p className="text-5xl font-bold mb-2">
+          <p className="text-sm text-gray-500 font-medium mb-2">Taxa de Cancelamento</p>
+          <p className="text-4xl font-bold text-gray-900 mb-2">
             {(dadosRelatorio.taxaCancelamento * 100).toFixed(1)}%
           </p>
-          <p className="text-sm opacity-75">
+          <p className="text-xs text-gray-400">
             {dadosRelatorio.taxaCancelamento < 0.1 ? '✓ Dentro da meta' : '⚠ Acima da meta'}
           </p>
         </div>
 
-        <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-8 text-white shadow-lg">
-          <div className="flex items-center justify-between mb-4">
-            <CheckCircle size={40} className="opacity-80" />
-            <div className="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2">
-              <p className="text-xs font-medium opacity-90">Meta: &gt; 90%</p>
+        <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+          <div className="flex justify-between items-start mb-4">
+            <div className="p-3 bg-green-50 rounded-xl">
+              <Award className="text-green-600" size={24} />
+            </div>
+            <div className="bg-green-50 rounded-lg px-4 py-2">
+              <p className="text-xs font-medium text-green-600">Meta: &gt; 90%</p>
             </div>
           </div>
-          <p className="text-lg font-medium opacity-90 mb-2">Satisfação Geral</p>
-          <p className="text-5xl font-bold mb-2">
+          <p className="text-sm text-gray-500 font-medium mb-2">Satisfação Geral</p>
+          <p className="text-4xl font-bold text-gray-900 mb-2">
             {(dadosRelatorio.satisfacao * 100).toFixed(1)}%
           </p>
-          <p className="text-sm opacity-75">
-            ✓ Meta alcançada
-          </p>
+          <p className="text-xs text-gray-400">✓ Meta alcançada</p>
         </div>
       </div>
 
       {/* Gráficos */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Radar de Métricas */}
-        <div className="bg-white rounded-xl shadow-md p-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-6 flex items-center gap-2">
-            <Award className="text-teal-600" size={20} />
-            Métricas de Qualidade
-          </h3>
-          <ResponsiveContainer width="100%" height={350}>
-            <RadarChart data={metricasRadar}>
-              <PolarGrid stroke="#e5e7eb" />
-              <PolarAngleAxis dataKey="metrica" stroke="#6b7280" />
-              <PolarRadiusAxis angle={90} domain={[0, 100]} stroke="#6b7280" />
-              <Radar 
-                name="Score" 
-                dataKey="valor" 
-                stroke="#14b8a6" 
-                fill="#14b8a6" 
-                fillOpacity={0.6} 
-                strokeWidth={2}
-              />
-              <Tooltip />
-            </RadarChart>
-          </ResponsiveContainer>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-lg font-bold text-gray-900">Métricas de Qualidade</h3>
+            <button className="text-sm text-blue-600 font-medium hover:underline">Ver Detalhes</button>
+          </div>
+          <div className="h-[320px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <RadarChart data={metricasRadar}>
+                <PolarGrid stroke="#e5e7eb" />
+                <PolarAngleAxis dataKey="metrica" tick={{ fill: '#6b7280', fontSize: 12 }} />
+                <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fill: '#6b7280', fontSize: 11 }} />
+                <Radar 
+                  name="Score" 
+                  dataKey="valor" 
+                  stroke="#3b82f6" 
+                  fill="#3b82f6" 
+                  fillOpacity={0.2} 
+                  strokeWidth={2}
+                />
+                <Tooltip 
+                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                />
+              </RadarChart>
+            </ResponsiveContainer>
+          </div>
         </div>
 
         {/* Top Motoristas - Viagens */}
-        <div className="bg-white rounded-xl shadow-md p-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-6 flex items-center gap-2">
-            <TrendingUp className="text-teal-600" size={20} />
-            Top 5 Motoristas - Viagens
-          </h3>
-          <ResponsiveContainer width="100%" height={350}>
-            <BarChart data={dadosRelatorio.motoristas.maisViagens} layout="vertical">
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-              <XAxis type="number" stroke="#6b7280" />
-              <YAxis dataKey="motoristaNome" type="category" stroke="#6b7280" width={100} />
-              <Tooltip 
-                contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb' }}
-              />
-              <Bar dataKey="numeroViagens" fill="#14b8a6" name="Viagens" radius={[0, 8, 8, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-lg font-bold text-gray-900">Top Motoristas</h3>
+            <button className="text-sm text-blue-600 font-medium hover:underline">Ver Todos</button>
+          </div>
+          <div className="h-[320px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={dadosRelatorio.motoristas.maisViagens} layout="vertical">
+                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f0f0f0" />
+                <XAxis 
+                  type="number" 
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: '#9ca3af', fontSize: 12 }}
+                />
+                <YAxis 
+                  dataKey="motoristaNome" 
+                  type="category" 
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: '#6b7280', fontSize: 12 }}
+                  width={100} 
+                />
+                <Tooltip 
+                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                />
+                <Bar dataKey="numeroViagens" fill="#3b82f6" radius={[0, 8, 8, 0]} name="Viagens" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       </div>
 
       {/* Rankings */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        {/* Motoristas com Mais Viagens */}
-        <div className="bg-white rounded-xl shadow-md p-6">
-          <div className="flex items-center gap-2 mb-6">
-            <Trophy className="text-blue-600" size={24} />
-            <h3 className="text-lg font-semibold text-gray-900">Motoristas com Mais Viagens</h3>
-          </div>
-          <div className="space-y-4">
-            {dadosRelatorio.motoristas.maisViagens.map((m, idx) => (
-              <div 
-                key={idx} 
-                className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <span className={`flex items-center justify-center w-10 h-10 rounded-full font-bold text-lg ${
-                    idx === 0 ? 'bg-yellow-100 text-yellow-700' :
-                    idx === 1 ? 'bg-gray-200 text-gray-700' :
-                    idx === 2 ? 'bg-orange-100 text-orange-700' :
-                    'bg-gray-100 text-gray-600'
-                  }`}>
-                    {idx + 1}
-                  </span>
-                  {idx < 3 && <Trophy className={
-                    idx === 0 ? 'text-yellow-500' :
-                    idx === 1 ? 'text-gray-400' :
-                    'text-orange-600'
-                  } size={20} />}
-                  <div>
-                    <p className="font-semibold text-gray-900">{m.motoristaNome}</p>
-                    <p className="text-xs text-gray-500 flex items-center gap-1">
-                      <Star className="text-amber-500 fill-amber-500" size={12} />
-                      {m.avaliacaoMedia.toFixed(1)}
-                    </p>
-                  </div>
-                </div>
-                <Badge>{m.numeroViagens} viagens</Badge>
-              </div>
-            ))}
-          </div>
-        </div>
-
         {/* Motoristas Melhor Avaliados */}
-        <div className="bg-white rounded-xl shadow-md p-6">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
           <div className="flex items-center gap-2 mb-6">
-            <Star className="text-amber-500 fill-amber-500" size={24} />
-            <h3 className="text-lg font-semibold text-gray-900">Motoristas Melhor Avaliados</h3>
+            <Star className="text-amber-400 fill-amber-400" size={20} />
+            <h3 className="text-lg font-bold text-gray-900">Motoristas Melhor Avaliados</h3>
           </div>
-          <div className="space-y-4">
+          <div className="space-y-3">
             {dadosRelatorio.motoristas.melhorAvaliados.map((m, idx) => (
               <div 
                 key={idx} 
                 className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
               >
                 <div className="flex items-center gap-3">
-                  <span className={`flex items-center justify-center w-10 h-10 rounded-full font-bold text-lg ${
-                    idx === 0 ? 'bg-yellow-100 text-yellow-700' :
-                    idx === 1 ? 'bg-gray-200 text-gray-700' :
-                    idx === 2 ? 'bg-orange-100 text-orange-700' :
-                    'bg-gray-100 text-gray-600'
-                  }`}>
-                    {idx + 1}
-                  </span>
+                  <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center">
+                    <span className="font-bold text-blue-600 text-sm">{idx + 1}</span>
+                  </div>
                   <div>
-                    <p className="font-semibold text-gray-900">{m.motoristaNome}</p>
+                    <p className="font-medium text-gray-900 text-sm">{m.motoristaNome}</p>
                     <p className="text-xs text-gray-500">{m.numeroViagens} viagens</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-1 bg-amber-50 px-3 py-1.5 rounded-lg">
-                  <Star className="text-amber-500 fill-amber-500" size={16} />
-                  <span className="font-bold text-amber-700">{m.avaliacao.toFixed(1)}</span>
+                  <Star className="text-amber-400 fill-amber-400" size={14} />
+                  <span className="font-bold text-amber-600 text-sm">{m.avaliacao.toFixed(1)}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Resumo de Métricas */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+          <div className="flex items-center gap-2 mb-6">
+            <Award className="text-blue-600" size={20} />
+            <h3 className="text-lg font-bold text-gray-900">Resumo de Métricas</h3>
+          </div>
+          <div className="space-y-4">
+            {Object.entries(dadosRelatorio.metricas).map(([key, value]) => (
+              <div key={key}>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-gray-700 capitalize">{key}</span>
+                  <span className="text-sm font-bold text-gray-900">{value}%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div
+                    className="bg-blue-600 h-2 rounded-full transition-all"
+                    style={{ width: `${value}%` }}
+                  ></div>
                 </div>
               </div>
             ))}
@@ -292,50 +292,46 @@ const RelatorioDesempenho = () => {
       </div>
 
       {/* Clientes Frequentes */}
-      <div className="bg-white rounded-xl shadow-md overflow-hidden mb-8">
-        <div className="p-6 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-            <Users className="text-teal-600" size={20} />
-            Top 10 Clientes Mais Frequentes
-          </h3>
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8">
+        <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <Users className="text-blue-600" size={20} />
+            <h3 className="text-lg font-bold text-gray-900">Top 10 Clientes Mais Frequentes</h3>
+          </div>
+          <Link href="/clientes" className="text-sm text-blue-600 font-medium hover:underline flex items-center gap-1">
+            Ver Clientes
+            <ChevronRight size={16} />
+          </Link>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="bg-gray-50/50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">Posição</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">Cliente</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">Nº Viagens</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">Categoria</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">#</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Cliente</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Nº Viagens</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Categoria</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-100">
               {dadosRelatorio.clientes.maisFrequentes.map((cliente, idx) => (
-                <tr key={idx} className="hover:bg-gray-50 transition-colors">
+                <tr key={idx} className="hover:bg-gray-50/50 transition-colors">
                   <td className="px-6 py-4">
-                    <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold ${
-                      idx === 0 ? 'bg-yellow-100 text-yellow-700' :
-                      idx === 1 ? 'bg-gray-200 text-gray-700' :
-                      idx === 2 ? 'bg-orange-100 text-orange-700' :
-                      'bg-gray-100 text-gray-600'
-                    }`}>
-                      {idx + 1}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center text-teal-700 font-semibold">
-                        {cliente.clienteNome.charAt(0)}
-                      </div>
-                      <span className="text-sm font-medium text-gray-900">{cliente.clienteNome}</span>
+                    <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center">
+                      <span className="font-bold text-blue-600 text-sm">{idx + 1}</span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-sm font-semibold text-gray-900">{cliente.numeroViagens}</td>
+                  <td className="px-6 py-4">
+                    <span className="font-medium text-gray-900">{cliente.clienteNome}</span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="text-gray-600">{cliente.numeroViagens}</span>
+                  </td>
                   <td className="px-6 py-4">
                     <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
-                      cliente.numeroViagens > 50 ? 'bg-purple-100 text-purple-700' :
-                      cliente.numeroViagens > 30 ? 'bg-blue-100 text-blue-700' :
-                      'bg-gray-100 text-gray-700'
+                      cliente.numeroViagens > 50 ? 'bg-purple-50 text-purple-600' :
+                      cliente.numeroViagens > 30 ? 'bg-blue-50 text-blue-600' :
+                      'bg-gray-100 text-gray-600'
                     }`}>
                       {cliente.numeroViagens > 50 ? 'VIP' : cliente.numeroViagens > 30 ? 'Frequente' : 'Regular'}
                     </span>
@@ -347,43 +343,22 @@ const RelatorioDesempenho = () => {
         </div>
       </div>
 
-      {/* Resumo de Métricas */}
-      <div className="bg-white rounded-xl shadow-md p-6 mb-8">
-        <h3 className="text-lg font-semibold text-gray-800 mb-6">Resumo de Métricas de Qualidade</h3>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-          {Object.entries(dadosRelatorio.metricas).map(([key, value]) => (
-            <div key={key} className="text-center p-4 bg-gray-50 rounded-lg">
-              <p className="text-sm text-gray-600 mb-2 capitalize">{key}</p>
-              <p className="text-3xl font-bold text-teal-600">{value}%</p>
-              <div className="w-full bg-gray-200 rounded-full h-2 mt-3">
-                <div
-                  className="bg-teal-600 h-2 rounded-full transition-all"
-                  style={{ width: `${value}%` }}
-                ></div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
       {/* Botões de Exportação */}
       <div className="flex gap-3">
-        <Button 
-          variant="outline" 
-          className="flex items-center gap-2"
+        <button 
           onClick={exportarPDF}
+          className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors text-sm font-medium"
         >
-          <Download size={18} />
+          <Download size={16} />
           Exportar PDF
-        </Button>
-        <Button 
-          variant="outline" 
-          className="flex items-center gap-2"
+        </button>
+        <button 
           onClick={exportarExcel}
+          className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors text-sm font-medium"
         >
-          <Download size={18} />
+          <Download size={16} />
           Exportar Excel
-        </Button>
+        </button>
       </div>
     </MainLayout>
   );

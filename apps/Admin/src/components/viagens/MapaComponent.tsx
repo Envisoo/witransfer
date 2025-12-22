@@ -142,7 +142,7 @@ const MapaComponent = () => {
   }, []);
 
   return (
-    <div className="relative w-full h-[450px] rounded-xl overflow-hidden border border-gray-200 shadow-lg mb-8">
+    <div className="relative w-full h-[500px] overflow-hidden border border-gray-200 shadow-lg mb-8">
       {/* Map UI Overlay */}
       <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm p-4 rounded-lg shadow-md z-[1000]">
         <h3 className="font-semibold text-gray-800 flex items-center gap-2 mb-3">
