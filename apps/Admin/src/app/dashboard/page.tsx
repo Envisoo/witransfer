@@ -42,7 +42,7 @@ const dataRevenue = [
 
 const recentTrips = [
   { id: "v123", cliente: "Maria Silva", destino: "Aeroporto 4 Fev", valor: 5000, status: "concluida", time: "Há 10 min" },
-  { id: "v124", cliente: "João Pedro", destino: "Talatona", valor: 3500, status: "emprogresss", time: "Agora" },
+  { id: "v124", cliente: "João Pedro", destino: "Talatona", valor: 3500, status: "em_progresso", time: "Agora" },
   { id: "v125", cliente: "Ana Souza", destino: "Kilamba", valor: 8000, status: "solicitada", time: "Há 5 min" },
   { id: "v126", cliente: "Carlos Manuel", destino: "Mutamba", valor: 2000, status: "cancelada", time: "Há 1h" },
 ];

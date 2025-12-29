@@ -72,7 +72,7 @@ const Sidebar: React.FC<SidebarProps> = ({ mobile = false, onClose }) => {
               href={item.href}
               onClick={mobile ? onClose : undefined}
               className={`
-                flex items-center gap-3 px-4 py-3 rounded-lg 
+                flex items-center gap-3 px-4 py-3 rounded-lg text-sm
                 hover:bg-primary-600 transition-colors duration-200
                 ${
                   isActive

@@ -1,4 +1,4 @@
-export type StatusViagem = 'solicitada' | 'aceita' | 'emcaminho' | 'emprogresss' | 'concluida' | 'cancelada';
+export type StatusViagem = 'solicitada' | 'aceita' | 'emcaminho' | 'em_progresso' | 'concluida' | 'cancelada';
 export type TipoPagamento = 'dinheiro' | 'cartao' | 'transferencia' | 'carteira_digital';
 
 export interface Localizacao {

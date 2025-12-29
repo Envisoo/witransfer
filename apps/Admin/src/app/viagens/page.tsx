@@ -76,7 +76,7 @@ const Viagens = () => {
       destino: { latitude: -8.814667, longitude: 13.230111, endereco: "Aeroporto 4 de Fevereiro" },
       dataPartida: new Date().toISOString(),
       distancia: 15.5,
-      status: "emprogresss",
+      status: "em_progresso",
       preco: 5000,
       taxaPlataforma: 500,
       comissaoMotorista: 4500,
@@ -205,7 +205,7 @@ const Viagens = () => {
   const stats = {
     total: mockViagensList.length,
     concluidas: mockViagensList.filter(v => v.status === 'concluida').length,
-    emAndamento: mockViagensList.filter(v => ['emprogresss', 'emcaminho'].includes(v.status)).length,
+    emAndamento: mockViagensList.filter(v => ['em_progresso', 'emcaminho'].includes(v.status)).length,
     canceladas: mockViagensList.filter(v => v.status === 'cancelada').length,
   };
 
@@ -308,7 +308,7 @@ const Viagens = () => {
               <option value="solicitada">Solicitada</option>
               <option value="aceita">Aceita</option>
               <option value="emcaminho">Em Caminho</option>
-              <option value="emprogresss">Em Progresso</option>
+              <option value="em_progresso">Em Progresso</option>
               <option value="concluida">Concluída</option>
               <option value="cancelada">Cancelada</option>
             </select>

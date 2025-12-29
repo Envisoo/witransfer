@@ -24,7 +24,7 @@ export const STATUS_VIAGENS = {
     SOLICITADA: 'solicitada',
     ACEITA: 'aceita',
     EMCAMINHO: 'emcaminho',
-    EMPROGRESSS: 'emprogresss',
+    EM_PROGRESSO: 'em_progresso',
     CONCLUIDA: 'concluida',
     CANCELADA: 'cancelada',
 } as const;
@@ -113,7 +113,7 @@ export const CORES_STATUS = {
     solicitada: '#06b6d4', // cyan
     aceita: '#3b82f6', // blue
     emcaminho: '#8b5cf6', // purple
-    emprogresss: '#ec4899', // pink
+    em_progresso: '#ec4899', // pink
     concluida: '#10b981', // green
     cancelada: '#ef4444', // red
     pendente: '#f59e0b', // amber

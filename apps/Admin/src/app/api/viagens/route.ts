@@ -14,7 +14,7 @@ const VIAGENS_MOCK = [
         destino: { latitude: -8.84, longitude: 13.24, endereco: 'Talatona Shopping, Luanda' },
         dataPartida: new Date(Date.now() - 1000 * 60 * 30).toISOString(), // 30 mins ago
         distancia: 8.5,
-        status: 'emprogresss',
+        status: 'em_progresso',
         preco: 5000,
         taxaPlataforma: 750,
         comissaoMotorista: 4250,

@@ -51,7 +51,7 @@ const DetalheViagem = () => {
       dataChegada: new Date(Date.now() + 1800000).toISOString(),
       duracao: 30,
       distancia: 15.5,
-      status: "emprogresss",
+      status: "em_progresso",
       preco: 5000,
       taxaPlataforma: 500,
       comissaoMotorista: 4500,
@@ -73,7 +73,7 @@ const DetalheViagem = () => {
   const statusVariant = (status: string) => {
     switch (status) {
       case "concluida": return "success";
-      case "emprogresss": 
+      case "em_progresso": 
       case "emcaminho": return "info";
       case "cancelada": return "destructive";
       case "solicitada": return "warning";

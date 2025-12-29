@@ -128,7 +128,7 @@ export const OBTER_NOME_STATUS = (status: string): string => {
         solicitada: 'Solicitada',
         aceita: 'Aceita',
         emcaminho: 'Em Caminho',
-        emprogresss: 'Em Progresso',
+        em_progresso: 'Em Progresso',
         concluida: 'Concluída',
         cancelada: 'Cancelada',
         pendente: 'Pendente',
